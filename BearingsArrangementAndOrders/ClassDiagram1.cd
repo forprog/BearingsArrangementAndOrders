@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BearingsArrangementAndOrders.BearingItemsGroup">
+    <Position X="1.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgBAABEAAACACAIAAACAAAAACEAAAAIAAAAgAABAAwA=</HashCode>
+      <FileName>BearingItemsGroup.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="ItemType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="BearingsArrangementAndOrders.BearingItemType">
+    <Position X="6.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>BearingItemType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BearingsArrangementAndOrders.BearingsArrangementOrder">
+    <Position X="5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BearingsArrangementOrder.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="BearingType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="BearingsArrangementAndOrders.BearingType">
+    <Position X="8.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAIAAACAAAAAAAAAAAEAA=</HashCode>
+      <FileName>BearingType.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="ValidBearingItemTypes" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="System.Collections.Generic.Dictionary&lt;TKey, TValue&gt;" Collapsed="true">
+    <Position X="10.5" Y="2" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Struct Name="System.Collections.Generic.Dictionary&lt;TKey, TValue&gt;.Enumerator" Collapsed="true">
+        <TypeIdentifier />
+        <Lollipop Position="0.2" />
+      </Struct>
+      <Class Name="System.Collections.Generic.Dictionary&lt;TKey, TValue&gt;.KeyCollection" Collapsed="true">
+        <TypeIdentifier />
+        <Lollipop Position="0.2" />
+      </Class>
+      <Class Name="System.Collections.Generic.Dictionary&lt;TKey, TValue&gt;.ValueCollection" Collapsed="true">
+        <TypeIdentifier />
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="BearingsArrangementAndOrders.BearingGroup">
+    <Position X="12" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAAAAAAQAAAIAAAABAQABAAAAAAA=</HashCode>
+      <FileName>BearingGroup.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="BearingItemsCount" />
+      <Field Name="Type" />
+      <Field Name="BearingItemsGroups" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="BearingsArrangementAndOrders.ExcelLoader" Collapsed="true">
+    <Position X="0.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAkAAABAEAACEAGAAAJQIAIACAAAAAAAAAAAQAQQAAA=</HashCode>
+      <FileName>ExcelLoader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BearingsArrangementAndOrders.BearingArranger">
+    <Position X="4.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAgA=</HashCode>
+      <FileName>BearingArranger.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="BearingArrOrders" />
+      <Field Name="BearingTypes" />
+      <Field Name="ItemsGroups" />
+      <Field Name="ItemTypes" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="System.Collections.Generic.List&lt;T&gt;" Collapsed="true">
+    <Position X="9.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
