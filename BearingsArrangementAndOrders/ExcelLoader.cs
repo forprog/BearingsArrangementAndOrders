@@ -61,9 +61,9 @@ namespace BearingsArrangementAndOrders
             {
                 BearingItemType curItemType = new BearingItemType();
                 curItemType.Description = sParamItemDescr;
-                curItemType.Count = Convert.ToInt32(sParamItemCount);
                 curItemType.Type = sParamItemType;
                 paramBearingType.ValidBearingItemTypes.Add(sParamItemType, curItemType);
+                paramBearingType.BearingItemsCount.Add(sParamItemType, Convert.ToInt32(sParamItemCount));
             }
 
         }
@@ -204,6 +204,7 @@ namespace BearingsArrangementAndOrders
                             else
                             {
                                 curType = new BearingItemType { Description = sDescription, Type = sType };
+                                paramBearingItemTypes.Add(curType);
                             }
 
                             iExcelRowNumber = iItemsFirstRow;

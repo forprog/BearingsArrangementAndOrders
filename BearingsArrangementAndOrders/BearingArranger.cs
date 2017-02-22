@@ -14,15 +14,15 @@ namespace BearingsArrangementAndOrders
         public List<BearingItemsGroup> ItemsGroups = new List<BearingItemsGroup> { };
         public List<BearingItemType> ItemTypes = new List<BearingItemType> { };
 
-        public void CheckArrangement(List<BearingItemsGroup> paramPreviousItemGroups, int paramLevel, int paramMaxLevel, List<List<BearingItemsGroup>> paramItemGroupsLists, List<BearingGroup> paramPossibleBearingGroups, BearingType paramBearingType)
+        private void CheckArrangement(List<BearingItemsGroup> paramPreviousItemGroups, int paramLevel, int paramMaxLevel, BearingType paramBearingType, List<List<BearingItemsGroup>> paramItemsGroupsList, List<BearingGroup> paramPossibleBearingGroups)
         {
             if (paramLevel <= paramMaxLevel)
             {
-                foreach (BearingItemsGroup curItemGroupList in paramItemGroupsLists[paramLevel])
+                foreach (BearingItemsGroup curItemGroupList in paramItemsGroupsList[paramLevel])
                 {
                     List<BearingItemsGroup> curItemsGroups = new List<BearingItemsGroup>(paramPreviousItemGroups);
                     curItemsGroups.Add(curItemGroupList);
-                    CheckArrangement(curItemsGroups, paramLevel + 1, paramMaxLevel, paramItemGroupsLists, paramPossibleBearingGroups, paramBearingType);
+                    CheckArrangement(curItemsGroups, paramLevel + 1, paramMaxLevel, paramBearingType, paramItemsGroupsList, paramPossibleBearingGroups);
                 }
             }
             else
@@ -32,9 +32,11 @@ namespace BearingsArrangementAndOrders
                 int iArrangementCountIncrease = 1;
                 foreach (BearingItemsGroup curItemGroup in paramPreviousItemGroups)
                 {
-                    curBearingGroup.BearingItemsGroups[curItemGroup.ItemType.Type] = curItemGroup;
+                    curBearingGroup.BearingItemsGroups.Add(curItemGroup.ItemType.Type, curItemGroup);
                     iArrangementCountIncrease = iArrangementCountIncrease * curItemGroup.ItemCount;
                 }
+                curBearingGroup.SetCount();
+
                 if (curBearingGroup.IsArrangement())
                 {
                     paramPossibleBearingGroups.Add(curBearingGroup);
@@ -48,6 +50,82 @@ namespace BearingsArrangementAndOrders
             }
         }
 
+
+        private List<BearingGroup> FindBearingGroupsOfItemGroupInList(BearingItemsGroup paramItemGroup, List<BearingGroup> paramBearingGroupList)
+        {
+
+            return paramBearingGroupList.Where(kvp => kvp.BearingItemsGroups.ContainsValue(paramItemGroup)).ToList();
+
+        }
+
+        private void RemoveBearingGroupsOfItemGroupFromList(BearingItemsGroup paramItemGroup, List<BearingGroup> paramBearingGroupList)
+        {
+
+            paramBearingGroupList.RemoveAll(kvp => kvp.BearingItemsGroups.ContainsValue(paramItemGroup));
+
+        }
+
+        private void FindSolution(BearingsArrangementOrder paramArrOrder, List<BearingGroup> paramPossibleBearingGroups, List<BearingItemsGroup> paramItemsGroups, List<BearingGroup> paramSolution)
+        {
+            //сортировка деталей, если нужна
+            //IEnumerable<BearingGroup> curPossibleBearings = from qGroups in paramPossibleBearingGroups
+            //                                                where qGroups.Type == paramArrOrder.BearingType
+            //                                                select qGroups;
+            int ItemNumber,
+                ArrOrderCount = paramArrOrder.Count;
+            List<BearingGroup> matches;
+
+            paramItemsGroups.Sort((x, y) => x.ArrangementCount.CompareTo(y.ArrangementCount));//сортировка от наименее к наиболее востребованным деталям
+
+            for (ItemNumber = 0; (ItemNumber < paramItemsGroups.Count) && (ArrOrderCount > 0); ItemNumber++)
+            {
+                var CurItemGroup = paramItemsGroups[ItemNumber];
+                if ((CurItemGroup.ItemCount > 0) && (CurItemGroup.ArrangementCount > 0))
+                {
+                    matches = FindBearingGroupsOfItemGroupInList(CurItemGroup, paramPossibleBearingGroups);
+                    matches.Sort((x, y) => x.Count.CompareTo(y.Count));
+
+                    if (matches.Count > 0)
+                    {
+                        var curPossibleBearingGroup = matches[0];
+                        BearingGroup curSolutionGroup = new BearingGroup(curPossibleBearingGroup);
+                        curSolutionGroup.SetCount(Math.Min(curSolutionGroup.GetCount(), ArrOrderCount));
+                        ArrOrderCount -= curSolutionGroup.Count;
+
+                        if (curSolutionGroup.Count > 0)
+                        {
+                            foreach (var item in curSolutionGroup.BearingItemsGroups)
+                            {
+                                var curItemsGroup = item.Value;
+
+                                //уменьшить количество деталей в группах деталей и убрать возможные группы подшипников с группой деталей, а если надо будет набирать количество - то надо будет уменьшать количество возможных подшипников везде, где используются группы деталей, взятые в решение
+                                curItemsGroup.ItemCount -= curSolutionGroup.Type.BearingItemsCount[curItemsGroup.ItemType.Type] * curSolutionGroup.Count;
+                                if (curItemsGroup.ItemCount > 0)
+                                {
+                                    var BearingGroups = FindBearingGroupsOfItemGroupInList(curItemsGroup, paramPossibleBearingGroups);
+                                    foreach (var curBearingGroup in BearingGroups)
+                                    {
+                                        if (curBearingGroup != curPossibleBearingGroup)
+                                        {
+                                            curBearingGroup.SetCount();
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    RemoveBearingGroupsOfItemGroupFromList(curItemsGroup, paramPossibleBearingGroups);
+                                }
+
+                            }
+                            curPossibleBearingGroup.SetCount();
+                            paramSolution.Add(curSolutionGroup);
+                        }
+                    }
+                }
+            }
+        }
+
+
         public void DoArrangement()
         {
             var CurrentSolution = new List<BearingGroup> { };
@@ -56,26 +134,31 @@ namespace BearingsArrangementAndOrders
             {
 
                 List<BearingGroup> PossibleBearingGroups = new List<BearingGroup> { };
-                List<List<BearingItemsGroup>> ItemsGroupsLists = new List<List<BearingItemsGroup>> { };
+                List<List<BearingItemsGroup>> curItemsGroupsLists = new List<List<BearingItemsGroup>> { };
+                List<BearingGroup> curPossibleBearingGroups = new List<BearingGroup> { };
+                List<BearingItemsGroup> curItemsGroups = new List<BearingItemsGroup> { };
+                List<BearingItemsGroup> curBearingItems = new List<BearingItemsGroup> { };
+                List<BearingGroup> curSolution = new List<BearingGroup> { };
 
                 foreach (var curItemType in curArrOrder.BearingType.ValidBearingItemTypes)
                 {
                     IEnumerable<BearingItemsGroup> curItemGroups = from qGroups in ItemsGroups
                                                                    where (qGroups.ItemType.Description == curItemType.Value.Description) && (qGroups.ItemCount > 0)
                                                                    select qGroups;
-                    ItemsGroupsLists.Add(curItemGroups.ToList());
+                    curItemsGroupsLists.Add(curItemGroups.ToList());
+                    curItemsGroups.AddRange(curItemGroups.ToList());
                 }
 
                 int iValidItemTypesCount = curArrOrder.BearingType.ValidBearingItemTypes.Count();
-                List<BearingItemsGroup> curBearingItems = new List<BearingItemsGroup> { };
-                List<BearingGroup> curPossibleBearings = new List<BearingGroup> { };
-                CheckArrangement(curBearingItems, 0, iValidItemTypesCount - 1, ItemsGroupsLists, curPossibleBearings, curArrOrder.BearingType);
+                CheckArrangement(curBearingItems, 0, iValidItemTypesCount - 1, curArrOrder.BearingType, curItemsGroupsLists, curPossibleBearingGroups);
+
+                FindSolution(curArrOrder, curPossibleBearingGroups, curItemsGroups, curSolution);
+
+                //todo если есть нежокомплектованные заказы, от шара получить частично комплектующиеся группы, для них найти перекрестные заказы. для остальных дать стандартный заказ на кольца под шар
 
             }
 
         }
-
-
 
     }
 }

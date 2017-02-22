@@ -10,6 +10,7 @@ namespace BearingsArrangementAndOrders
     {
         public string Description;
         public Dictionary<string, BearingItemType> ValidBearingItemTypes = new Dictionary<string, BearingItemType> { };
+        public Dictionary<string, int> BearingItemsCount = new Dictionary<string, int> { };
         public double? Rad1Nominal;
         public double? Rad1Min;
         public double? Rad1Max;

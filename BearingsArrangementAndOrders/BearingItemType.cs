@@ -9,7 +9,7 @@ namespace BearingsArrangementAndOrders
     class BearingItemType
     {
         public string Description; //уникальное наименование из 1С
-        public string Type;
-        public int Count;
+        public string Type;//вид детали
+        //public int Count;
     }
 }
