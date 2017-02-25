@@ -14,6 +14,7 @@ namespace BearingsArrangementAndOrders
         public List<BearingItemsGroup> ItemsGroups = new List<BearingItemsGroup> { };
         public List<BearingItemType> ItemTypes = new List<BearingItemType> { };
 
+
         private void CheckArrangement(List<BearingItemsGroup> paramPreviousItemGroups, int paramLevel, int paramMaxLevel, BearingType paramBearingType, List<List<BearingItemsGroup>> paramItemsGroupsList, List<BearingGroup> paramPossibleBearingGroups)
         {
             if (paramLevel <= paramMaxLevel)
@@ -72,7 +73,7 @@ namespace BearingsArrangementAndOrders
             //                                                where qGroups.Type == paramArrOrder.BearingType
             //                                                select qGroups;
             int ItemNumber,
-                ArrOrderCount = paramArrOrder.Count;
+                ArrOrderCount = paramArrOrder.OrderCount;
             List<BearingGroup> matches;
 
             paramItemsGroups.Sort((x, y) => x.ArrangementCount.CompareTo(y.ArrangementCount));//сортировка от наименее к наиболее востребованным деталям
@@ -125,6 +126,105 @@ namespace BearingsArrangementAndOrders
             }
         }
 
+        private void AddOrdersToSolution(BearingsArrangementOrder paramArrOrder, List<BearingItemsGroup> paramUsedItems,ref int paramNeededBearingCount, List<NotCompleteBearingGroup> paramSolution)
+        {
+            var curNeededItems = paramArrOrder.BearingType.CreateItemGroupsToCompleteOrder(paramUsedItems);
+            if (curNeededItems.Count > 0)
+            {
+                var curNotCompletedGroup = new NotCompleteBearingGroup();
+                curNotCompletedGroup.Type = paramArrOrder.BearingType;
+                foreach (var curItemGroup in paramUsedItems)
+                {
+                    curNotCompletedGroup.UsedBearingItemsGroups.Add(curItemGroup.ItemType.Type, curItemGroup);
+                }
+
+                foreach (var NeedItem in curNeededItems)
+                {
+                    curNotCompletedGroup.NeededBearingItemsGroups.Add(NeedItem.ItemType.Type, NeedItem);
+                }
+
+                curNotCompletedGroup.SetCount(Math.Min(curNotCompletedGroup.GetCount(), paramNeededBearingCount));
+
+                if (curNotCompletedGroup.Count > 0)
+                {
+                    paramSolution.Add(curNotCompletedGroup);
+                    paramNeededBearingCount -= curNotCompletedGroup.Count;
+                    foreach (var ItemGroup in paramUsedItems)
+                    {
+                        ItemGroup.ItemCount -= curNotCompletedGroup.Count * paramArrOrder.BearingType.BearingItemsCount[ItemGroup.ItemType.Type];
+                    }
+                }
+
+            }
+
+        }
+
+
+
+        private void MakeOrders(BearingsArrangementOrder paramArrOrder, List<BearingItemsGroup> paramItemsGroups, List<NotCompleteBearingGroup> paramSolution)
+        {
+            //если сюда попали - значит по-любому подшипник в нужном количестве из существующих деталей не комплектуется
+            int iNeededBearingCount = paramArrOrder.OrderCount - paramArrOrder.ArrangedBearingsCount();
+            List<BearingItemsGroup> cur04Items = new List<BearingItemsGroup>(),
+                                    curOtherItems = new List<BearingItemsGroup>();
+
+            //набираем списки деталей для кокретного подшипника
+            foreach (var KVP in paramArrOrder.BearingType.ValidBearingItemTypes)
+            {
+                var curItemType = KVP.Value;
+                var curItemsEnumerable = from curItemGroup in paramItemsGroups
+                                         where (curItemGroup.ItemType.Type == curItemType.Type) && (curItemGroup.ItemCount > 0)
+                                         select curItemGroup;
+                var curItemsList = curItemsEnumerable.ToList();
+                if (curItemType.Type == "04")
+                {
+                    cur04Items = new List<BearingItemsGroup>(curItemsList);
+                }
+                else
+                {
+                    curOtherItems.AddRange(curItemsList);
+                }
+            }
+
+            //ищем перекрестные заказы для шара и одной из деталей
+            if ((cur04Items.Count > 0) && (curOtherItems.Count > 0))
+            {
+                cur04Items.Sort((x, y) => x.ItemCount.CompareTo(y.ItemCount));
+                curOtherItems.Sort((x, y) => x.ItemCount.CompareTo(y.ItemCount));
+                bool bOrdersComplete = false;
+
+                for (int i04ItemNumber = 0; (i04ItemNumber < cur04Items.Count) && (!bOrdersComplete); i04ItemNumber++)
+                {
+                    var cur04Group = cur04Items[i04ItemNumber];
+                    for (int iOtherItemNumber = 0; (iOtherItemNumber < curOtherItems.Count) && (!bOrdersComplete); iOtherItemNumber++)
+                    {
+                        var curOtherItemGroup = curOtherItems[iOtherItemNumber];
+                        if (curOtherItemGroup.ItemCount > 0)
+                        {
+                            AddOrdersToSolution(paramArrOrder, new List<BearingItemsGroup> { cur04Group, curOtherItemGroup },ref iNeededBearingCount, paramSolution);
+
+                            if (iNeededBearingCount == 0) { bOrdersComplete = true; }
+
+                        }
+                    }
+                }
+
+
+                if (iNeededBearingCount > 0)//перекрестных заказов недостаточно, делаем заказы от шара
+                {
+                    for (int i04ItemNumber = 0; (i04ItemNumber < cur04Items.Count) && (!bOrdersComplete); i04ItemNumber++)
+                    {
+                        var cur04Group = cur04Items[i04ItemNumber];
+                        if (cur04Group.ItemCount > 0)
+                        {
+                            AddOrdersToSolution(paramArrOrder, new List<BearingItemsGroup> { cur04Group },ref iNeededBearingCount, paramSolution);
+
+                            if (iNeededBearingCount == 0) { bOrdersComplete = true; }
+                        }
+                    }
+                }
+            }
+        }
 
         public void DoArrangement()
         {
@@ -138,7 +238,8 @@ namespace BearingsArrangementAndOrders
                 List<BearingGroup> curPossibleBearingGroups = new List<BearingGroup> { };
                 List<BearingItemsGroup> curItemsGroups = new List<BearingItemsGroup> { };
                 List<BearingItemsGroup> curBearingItems = new List<BearingItemsGroup> { };
-                List<BearingGroup> curSolution = new List<BearingGroup> { };
+                //List<BearingGroup> curSolution = new List<BearingGroup> { };
+                //List<NotCompleteBearingGroup> curNotCompletedBearings = new List<NotCompleteBearingGroup> { };
 
                 foreach (var curItemType in curArrOrder.BearingType.ValidBearingItemTypes)
                 {
@@ -152,13 +253,14 @@ namespace BearingsArrangementAndOrders
                 int iValidItemTypesCount = curArrOrder.BearingType.ValidBearingItemTypes.Count();
                 CheckArrangement(curBearingItems, 0, iValidItemTypesCount - 1, curArrOrder.BearingType, curItemsGroupsLists, curPossibleBearingGroups);
 
-                FindSolution(curArrOrder, curPossibleBearingGroups, curItemsGroups, curSolution);
+                FindSolution(curArrOrder, curPossibleBearingGroups, curItemsGroups, curArrOrder.ArrangedBearings);
 
-                //todo если есть нежокомплектованные заказы, от шара получить частично комплектующиеся группы, для них найти перекрестные заказы. для остальных дать стандартный заказ на кольца под шар
-
+                if (curArrOrder.ArrangedBearingsCount() < curArrOrder.OrderCount)
+                {
+                    //скомплектовалось недостаточно, надо дозаказывать
+                    MakeOrders(curArrOrder,curItemsGroups, curArrOrder.NotCompletedBearings);
+                }
             }
-
         }
-
     }
 }

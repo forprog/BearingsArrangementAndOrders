@@ -10,6 +10,7 @@ namespace BearingsArrangementAndOrders
     {
         public string Description; //уникальное наименование из 1С
         public string Type;//вид детали
-        //public int Count;
+        public double? Size1Max;
+        public double? Size1Min;
     }
 }

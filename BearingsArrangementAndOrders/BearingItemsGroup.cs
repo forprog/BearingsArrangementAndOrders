@@ -8,6 +8,7 @@ namespace BearingsArrangementAndOrders
 {
     class BearingItemsGroup
     //класс содержит информацию о количестве деталей, одинаковых по всем размерам, обозначению и виду детали
+    //todo можно развести count на 2 части - доступный и зарезервированный. Тогда после поиска решений, по каждой группе деталей будет сразу понятно, сколько надо резевировать деталей
     {
         public double? Size1;
         public double? Size1Max;
@@ -53,5 +54,24 @@ namespace BearingsArrangementAndOrders
                 pItemCount = value;
             }
         }
+        public bool DoValid()
+        {
+            bool bReturn = false;
+            if ((Size1Max.HasValue)&&(Size1Min.HasValue))
+            {
+                double iSize1Max = Size1Max ?? 0;
+                double iSize1Min = Size1Min ?? 0;
+                double iTypeSize1Max = ItemType.Size1Max ?? 0;
+                double iTypeSize1Min = ItemType.Size1Min ?? 0;
+                if ((iSize1Max > iTypeSize1Min) && (iSize1Min < iTypeSize1Max))
+                {
+                    Size1Max = Math.Min(iSize1Max , iTypeSize1Max);
+                    Size1Min = Math.Max(iSize1Min , iTypeSize1Min);
+                    bReturn = true;
+                }
+            }
+            return bReturn;
+        }
+
     }
 }

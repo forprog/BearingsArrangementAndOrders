@@ -21,12 +21,15 @@ namespace BearingsArrangementAndOrders
         {
             BearingArranger curArranger = new BearingArranger();
 
-            ExcelLoader curExcel = new ExcelLoader("C:\\Users\\zamyckijj-ei\\Google Диск\\Работа\\Комплектовка ПШ\\комплектовка суточного.xlsx");
-            curExcel.LoadBearingTypesFromExcel(curArranger.BearingTypes);
+            ExcelInterface curExcel = new ExcelInterface("C:\\Users\\zamyckijj-ei\\Google Диск\\Работа\\Комплектовка ПШ\\комплектовка суточного.xlsx");
+            curExcel.LoadItemTypesFromExcel(curArranger.ItemTypes);
+            curExcel.LoadBearingTypesFromExcel(curArranger.BearingTypes, curArranger.ItemTypes);
             curExcel.LoadBearingArrangementOrderFromExcel(curArranger.BearingArrOrders, curArranger.BearingTypes);
             curExcel.LoadBearingItemsGroupsFromExcel(curArranger.ItemsGroups, curArranger.ItemTypes);
 
             curArranger.DoArrangement();
+
+            curExcel.ArrOrdersResultOutput(curArranger.BearingArrOrders);
 
         }
     }

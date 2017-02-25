@@ -57,7 +57,8 @@
     <Compile Include="BearingsArrangementOrder.cs" />
     <Compile Include="BearingType.cs" />
     <Compile Include="BearingGroup.cs" />
-    <Compile Include="ExcelLoader.cs" />
+    <Compile Include="ExcelInterface.cs" />
+    <Compile Include="NotCompleteBearingGroup.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,7 +79,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

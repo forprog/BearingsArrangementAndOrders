@@ -9,6 +9,28 @@ namespace BearingsArrangementAndOrders
     class BearingsArrangementOrder
     {
         public BearingType BearingType;
-        public int Count;
+        public int OrderCount;
+        public List<BearingGroup> ArrangedBearings = new List<BearingGroup> { };
+        public List<NotCompleteBearingGroup> NotCompletedBearings = new List<NotCompleteBearingGroup> { };
+
+        public int ArrangedBearingsCount()
+        {
+            int iReturn = 0;
+            foreach (var item in ArrangedBearings)
+            {
+                iReturn += item.Count;
+            }
+            return iReturn;
+        }
+
+        public int NotCompletedBearingsCount()
+        {
+            int iReturn = 0;
+            foreach (var item in NotCompletedBearings)
+            {
+                iReturn += item.Count;
+            }
+            return iReturn;
+        }
     }
 }
