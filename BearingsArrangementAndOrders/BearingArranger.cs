@@ -76,13 +76,13 @@ namespace BearingsArrangementAndOrders
                 ArrOrderCount = paramArrOrder.OrderCount;
             List<BearingGroup> matches;
 
-            //todo будем комплектовать по шару
-            //var IEnumItemsGroups =  from qItemsGroup in paramItemsGroups
-            //                         where qItemsGroup.ItemType.Type == "04"
-            //                         select qItemsGroup;
-            //paramItemsGroups = IEnumItemsGroups.ToList();
+            //будем комплектовать по массовости шара
+            var IEnumItemsGroups =  from qItemsGroup in paramItemsGroups
+                                     where qItemsGroup.ItemType.Type == "04"
+                                     select qItemsGroup;
+            paramItemsGroups = IEnumItemsGroups.ToList();
 
-            paramItemsGroups.Sort((x, y) => x.ArrangementCount.CompareTo(y.ArrangementCount));//сортировка от наименее к наиболее востребованным деталям
+            paramItemsGroups.Sort((x, y) => y.ArrangementCount.CompareTo(x.ArrangementCount));//сортировка от наименее к наиболее востребованным деталям
 
             for (ItemNumber = 0; (ItemNumber < paramItemsGroups.Count) && (ArrOrderCount > 0); ItemNumber++)
             {
@@ -90,49 +90,51 @@ namespace BearingsArrangementAndOrders
                 if ((CurItemGroup.ItemCount > 0) && (CurItemGroup.ArrangementCount > 0))
                 {
                     matches = FindBearingGroupsOfItemGroupInList(CurItemGroup, paramPossibleBearingGroups);
-                    matches.Sort((x, y) => x.Count.CompareTo(y.Count));
+                    matches.Sort((x, y) => x.Rad1Devation().CompareTo(y.Rad1Devation()));
 
-                    //todo надо перебирать все группы для данной детали, пока она не закончится
-                    //for (int i = 0; i < length; i++)
-                    //{
-
-                    //}
                     if (matches.Count > 0)
                     {
-                        var curPossibleBearingGroup = matches[0];
-                        BearingGroup curSolutionGroup = new BearingGroup(curPossibleBearingGroup);
-                        curSolutionGroup.SetCount(Math.Min(curSolutionGroup.GetCount(), ArrOrderCount));
-                        ArrOrderCount -= curSolutionGroup.Count;
-
-                        if (curSolutionGroup.Count > 0)
+                        //перебираем все группы для данной детали, пока она не закончится
+                        for (int i = 0; i < matches.Count; i++)
                         {
-                            foreach (var item in curSolutionGroup.BearingItemsGroups)
+                            var curPossibleBearingGroup = matches[i];
+                            BearingGroup curSolutionGroup = new BearingGroup(curPossibleBearingGroup);
+                            curSolutionGroup.SetCount(Math.Min(curSolutionGroup.GetCount(), ArrOrderCount));
+                            //todo добавить проверку минимального комплектуемого количества
+                            ArrOrderCount -= curSolutionGroup.Count;
+
+                            if (curSolutionGroup.Count > 0)
                             {
-                                var curItemsGroup = item.Value;
-
-                                //уменьшить количество деталей в группах деталей и убрать возможные группы подшипников с группой деталей, а если надо будет набирать количество - то надо будет уменьшать количество возможных подшипников везде, где используются группы деталей, взятые в решение
-                                curItemsGroup.GiveOutItemCount += curSolutionGroup.Type.BearingItemsCount[curItemsGroup.ItemType.Type] * curSolutionGroup.Count;
-                                curItemsGroup.ItemCount -= curItemsGroup.GiveOutItemCount;
-
-                                if (curItemsGroup.ItemCount > 0)
+                                foreach (var item in curSolutionGroup.BearingItemsGroups)
                                 {
-                                    var BearingGroups = FindBearingGroupsOfItemGroupInList(curItemsGroup, paramPossibleBearingGroups);
-                                    foreach (var curBearingGroup in BearingGroups)
+                                    var curItemsGroup = item.Value;
+
+                                    //уменьшить количество деталей в группах деталей и убрать возможные группы подшипников с группой деталей, а если надо будет набирать количество - то надо будет уменьшать количество возможных подшипников везде, где используются группы деталей, взятые в решение
+                                    var iGiveOutItemCount = curSolutionGroup.Type.BearingItemsCount[curItemsGroup.ItemType.Type] * curSolutionGroup.Count;
+                                    curItemsGroup.GiveOutItemCount += iGiveOutItemCount;
+                                    curItemsGroup.ItemCount -= iGiveOutItemCount;
+
+                                    if (curItemsGroup.ItemCount > 0)
                                     {
-                                        if (curBearingGroup != curPossibleBearingGroup)
+                                        var BearingGroups = FindBearingGroupsOfItemGroupInList(curItemsGroup, paramPossibleBearingGroups);
+                                        foreach (var curBearingGroup in BearingGroups)
                                         {
-                                            curBearingGroup.SetCount();
+                                            if (curBearingGroup != curPossibleBearingGroup)
+                                            {
+                                                curBearingGroup.SetCount();
+                                            }
                                         }
                                     }
+                                    else
+                                    {
+                                        RemoveBearingGroupsOfItemGroupFromList(curItemsGroup, paramPossibleBearingGroups);
+                                    }
+
                                 }
-                                else
-                                {
-                                    RemoveBearingGroupsOfItemGroupFromList(curItemsGroup, paramPossibleBearingGroups);
-                                }
+                                curPossibleBearingGroup.SetCount();
+                                paramSolution.Add(curSolutionGroup);
 
                             }
-                            curPossibleBearingGroup.SetCount();
-                            paramSolution.Add(curSolutionGroup);
                         }
                     }
                 }
@@ -164,8 +166,9 @@ namespace BearingsArrangementAndOrders
                     paramNeededBearingCount -= curNotCompletedGroup.Count;
                     foreach (var ItemGroup in paramUsedItems)
                     {
-                        ItemGroup.ReservedItemCount += curNotCompletedGroup.Count * paramArrOrder.BearingType.BearingItemsCount[ItemGroup.ItemType.Type];
-                        ItemGroup.ItemCount -= ItemGroup.ReservedItemCount;
+                        var iReservedItemCount = curNotCompletedGroup.Count * paramArrOrder.BearingType.BearingItemsCount[ItemGroup.ItemType.Type];
+                        ItemGroup.ReservedItemCount += iReservedItemCount;
+                        ItemGroup.ItemCount -= iReservedItemCount;
                     }
                 }
 

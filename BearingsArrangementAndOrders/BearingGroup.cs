@@ -7,10 +7,15 @@ namespace BearingsArrangementAndOrders
     {
         public BearingType Type;
         public Dictionary<string, BearingItemsGroup> BearingItemsGroups = new Dictionary<string, BearingItemsGroup>();
-        public double? Rad1()
+        public double Rad1()
         {
-            return Type.Rad1Nominal + BearingItemsGroups["01"].Size1 - BearingItemsGroups["02"].Size1 - 2 * BearingItemsGroups["04"].Size1;
+            return Type.Rad1Nominal.GetValueOrDefault() + BearingItemsGroups["01"].Size1 - BearingItemsGroups["02"].Size1 - 2 * BearingItemsGroups["04"].Size1;
         }
+
+        public double Rad1Devation()
+        {
+            return Math.Abs((Type.Rad1Max.GetValueOrDefault()-Type.Rad1Min.GetValueOrDefault())-Rad1());
+        } 
 
         private int pCount;
         public int Count
