@@ -292,11 +292,75 @@ namespace BearingsArrangementAndOrders
             }
         }
 
-        public void ArrOrdersResultOutput(List<BearingsArrangementOrder> paramBearingArrOrders)
+        private void UsedItemsOutput(List<BearingItemsGroup> paramBearingItemsGroups)
+        {
+            string sValue;
+            const int iLastColNumber = 5;
+
+            Worksheet UsedItemsTemplateWorksheet = pObjWorkBook.Sheets["ШаблонВыводаИспользуемыеДетали"];
+            Worksheet UsedItemsWorksheet = pObjWorkBook.Sheets["ИспользованныеДетали"];
+
+            UsedItemsWorksheet.Cells.Delete();
+
+            UsedItemsTemplateWorksheet.Range[UsedItemsTemplateWorksheet.Cells[1, 1], UsedItemsTemplateWorksheet.Cells[2, iLastColNumber]].Copy(UsedItemsWorksheet.Cells[1, 1]);
+            foreach (Range Cell in UsedItemsWorksheet.Range[UsedItemsWorksheet.Cells[1, 1], UsedItemsWorksheet.Cells[2, iLastColNumber]])
+            {
+                sValue = NullToString(Cell.Value);
+                switch (sValue)
+                {
+                    case "ДатаВремяКомплектовки":
+                        Cell.Value = "Время комплектовки: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ");
+                        break;
+                }
+            }
+
+            UsedItemsWorksheet.PageSetup.PrintTitleRows = "$1:$2";
+
+            int iExcelRowNumber = 3;
+
+            foreach (var curItemsGroup in paramBearingItemsGroups)
+            {
+
+                UsedItemsTemplateWorksheet.Range[UsedItemsTemplateWorksheet.Cells[3, 1], UsedItemsTemplateWorksheet.Cells[7, iLastColNumber]].Copy(UsedItemsWorksheet.Cells[iExcelRowNumber, 1]);
+
+                foreach (Range Cell in UsedItemsWorksheet.Range[UsedItemsWorksheet.Cells[iExcelRowNumber, 1], UsedItemsWorksheet.Cells[iExcelRowNumber, iLastColNumber]])
+                {
+                    sValue = NullToString(Cell.Value);
+                    Cell.Value = "";
+                    switch (sValue)
+                    {
+                        //Деталь	Размер1	КоличествоОстаток	КоличествоВыдать	КоличествоЗарезервировать
+
+                        case "Деталь":
+                            Cell.Value = curItemsGroup.ItemType.Description;
+                            break;
+                        case "Размер1":
+                            Cell.Value = curItemsGroup.Size1;
+                            break;
+                        case "КоличествоОстаток":
+                            Cell.Value = curItemsGroup.ItemCount;
+                            break;
+                        case "КоличествоВыдать":
+                            Cell.Value = curItemsGroup.GiveOutItemCount;
+                            break;
+                        case "КоличествоЗарезервировать":
+                            Cell.Value = curItemsGroup.ReservedItemCount;
+                            break;
+                    }
+                }
+                iExcelRowNumber++;
+            }
+
+            Marshal.ReleaseComObject(UsedItemsTemplateWorksheet);
+            Marshal.ReleaseComObject(UsedItemsWorksheet);
+        }
+
+        public void ArrOrdersResultOutput(List<BearingsArrangementOrder> paramBearingArrOrders, List<BearingItemsGroup> paramBearingItemsGroups)
         {
 
             SolutionOutput(paramBearingArrOrders);
             NotCompletedBearingsOutput(paramBearingArrOrders);
+            UsedItemsOutput(paramBearingItemsGroups);
 
         }
 

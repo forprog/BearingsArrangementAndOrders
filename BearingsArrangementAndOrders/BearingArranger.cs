@@ -76,6 +76,12 @@ namespace BearingsArrangementAndOrders
                 ArrOrderCount = paramArrOrder.OrderCount;
             List<BearingGroup> matches;
 
+            //todo будем комплектовать по шару
+            //var IEnumItemsGroups =  from qItemsGroup in paramItemsGroups
+            //                         where qItemsGroup.ItemType.Type == "04"
+            //                         select qItemsGroup;
+            //paramItemsGroups = IEnumItemsGroups.ToList();
+
             paramItemsGroups.Sort((x, y) => x.ArrangementCount.CompareTo(y.ArrangementCount));//сортировка от наименее к наиболее востребованным деталям
 
             for (ItemNumber = 0; (ItemNumber < paramItemsGroups.Count) && (ArrOrderCount > 0); ItemNumber++)
@@ -86,6 +92,11 @@ namespace BearingsArrangementAndOrders
                     matches = FindBearingGroupsOfItemGroupInList(CurItemGroup, paramPossibleBearingGroups);
                     matches.Sort((x, y) => x.Count.CompareTo(y.Count));
 
+                    //todo надо перебирать все группы для данной детали, пока она не закончится
+                    //for (int i = 0; i < length; i++)
+                    //{
+
+                    //}
                     if (matches.Count > 0)
                     {
                         var curPossibleBearingGroup = matches[0];
@@ -100,7 +111,9 @@ namespace BearingsArrangementAndOrders
                                 var curItemsGroup = item.Value;
 
                                 //уменьшить количество деталей в группах деталей и убрать возможные группы подшипников с группой деталей, а если надо будет набирать количество - то надо будет уменьшать количество возможных подшипников везде, где используются группы деталей, взятые в решение
-                                curItemsGroup.ItemCount -= curSolutionGroup.Type.BearingItemsCount[curItemsGroup.ItemType.Type] * curSolutionGroup.Count;
+                                curItemsGroup.GiveOutItemCount += curSolutionGroup.Type.BearingItemsCount[curItemsGroup.ItemType.Type] * curSolutionGroup.Count;
+                                curItemsGroup.ItemCount -= curItemsGroup.GiveOutItemCount;
+
                                 if (curItemsGroup.ItemCount > 0)
                                 {
                                     var BearingGroups = FindBearingGroupsOfItemGroupInList(curItemsGroup, paramPossibleBearingGroups);
@@ -126,7 +139,7 @@ namespace BearingsArrangementAndOrders
             }
         }
 
-        private void AddOrdersToSolution(BearingsArrangementOrder paramArrOrder, List<BearingItemsGroup> paramUsedItems,ref int paramNeededBearingCount, List<NotCompleteBearingGroup> paramSolution)
+        private void AddOrdersToSolution(BearingsArrangementOrder paramArrOrder, List<BearingItemsGroup> paramUsedItems, ref int paramNeededBearingCount, List<NotCompleteBearingGroup> paramSolution)
         {
             var curNeededItems = paramArrOrder.BearingType.CreateItemGroupsToCompleteOrder(paramUsedItems);
             if (curNeededItems.Count > 0)
@@ -151,7 +164,8 @@ namespace BearingsArrangementAndOrders
                     paramNeededBearingCount -= curNotCompletedGroup.Count;
                     foreach (var ItemGroup in paramUsedItems)
                     {
-                        ItemGroup.ItemCount -= curNotCompletedGroup.Count * paramArrOrder.BearingType.BearingItemsCount[ItemGroup.ItemType.Type];
+                        ItemGroup.ReservedItemCount += curNotCompletedGroup.Count * paramArrOrder.BearingType.BearingItemsCount[ItemGroup.ItemType.Type];
+                        ItemGroup.ItemCount -= ItemGroup.ReservedItemCount;
                     }
                 }
 
@@ -201,7 +215,7 @@ namespace BearingsArrangementAndOrders
                         var curOtherItemGroup = curOtherItems[iOtherItemNumber];
                         if (curOtherItemGroup.ItemCount > 0)
                         {
-                            AddOrdersToSolution(paramArrOrder, new List<BearingItemsGroup> { cur04Group, curOtherItemGroup },ref iNeededBearingCount, paramSolution);
+                            AddOrdersToSolution(paramArrOrder, new List<BearingItemsGroup> { cur04Group, curOtherItemGroup }, ref iNeededBearingCount, paramSolution);
 
                             if (iNeededBearingCount == 0) { bOrdersComplete = true; }
 
@@ -217,7 +231,7 @@ namespace BearingsArrangementAndOrders
                         var cur04Group = cur04Items[i04ItemNumber];
                         if (cur04Group.ItemCount > 0)
                         {
-                            AddOrdersToSolution(paramArrOrder, new List<BearingItemsGroup> { cur04Group },ref iNeededBearingCount, paramSolution);
+                            AddOrdersToSolution(paramArrOrder, new List<BearingItemsGroup> { cur04Group }, ref iNeededBearingCount, paramSolution);
 
                             if (iNeededBearingCount == 0) { bOrdersComplete = true; }
                         }
@@ -238,8 +252,6 @@ namespace BearingsArrangementAndOrders
                 List<BearingGroup> curPossibleBearingGroups = new List<BearingGroup> { };
                 List<BearingItemsGroup> curItemsGroups = new List<BearingItemsGroup> { };
                 List<BearingItemsGroup> curBearingItems = new List<BearingItemsGroup> { };
-                //List<BearingGroup> curSolution = new List<BearingGroup> { };
-                //List<NotCompleteBearingGroup> curNotCompletedBearings = new List<NotCompleteBearingGroup> { };
 
                 foreach (var curItemType in curArrOrder.BearingType.ValidBearingItemTypes)
                 {
@@ -254,11 +266,12 @@ namespace BearingsArrangementAndOrders
                 CheckArrangement(curBearingItems, 0, iValidItemTypesCount - 1, curArrOrder.BearingType, curItemsGroupsLists, curPossibleBearingGroups);
 
                 FindSolution(curArrOrder, curPossibleBearingGroups, curItemsGroups, curArrOrder.ArrangedBearings);
+                curArrOrder.ArrangedBearings.Sort((x, y) => x.BearingItemsGroups["04"].Size1.CompareTo(y.BearingItemsGroups["04"].Size1));
 
                 if (curArrOrder.ArrangedBearingsCount() < curArrOrder.OrderCount)
                 {
                     //скомплектовалось недостаточно, надо дозаказывать
-                    MakeOrders(curArrOrder,curItemsGroups, curArrOrder.NotCompletedBearings);
+                    MakeOrders(curArrOrder, curItemsGroups, curArrOrder.NotCompletedBearings);
                 }
             }
         }

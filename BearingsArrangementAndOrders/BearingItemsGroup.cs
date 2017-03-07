@@ -10,7 +10,7 @@ namespace BearingsArrangementAndOrders
     //класс содержит информацию о количестве деталей, одинаковых по всем размерам, обозначению и виду детали
     //todo можно развести count на 2 части - доступный и зарезервированный. Тогда после поиска решений, по каждой группе деталей будет сразу понятно, сколько надо резевировать деталей
     {
-        public double? Size1;
+        public double Size1;
         public double? Size1Max;
         public double? Size1Min;
 
@@ -24,7 +24,7 @@ namespace BearingsArrangementAndOrders
 
         public BearingItemType ItemType;
 
-        public int ArrangementCount;
+        public long ArrangementCount;
 
         public void AddBearingItemsGroupToGroup(BearingItemsGroup paramBearingItemsGorup)
         {
@@ -54,6 +54,33 @@ namespace BearingsArrangementAndOrders
                 pItemCount = value;
             }
         }
+
+        private int pReservedItemCount = 0;
+        public int ReservedItemCount
+        {
+            get
+            {
+                return pReservedItemCount;
+            }
+            set
+            {
+                pReservedItemCount = value;
+            }
+        }
+
+        private int pGiveOutItemCount = 0;
+        public int GiveOutItemCount
+        {
+            get
+            {
+                return pGiveOutItemCount;
+            }
+            set
+            {
+                pGiveOutItemCount = value;
+            }
+        }
+
         public bool DoValid()
         {
             bool bReturn = false;

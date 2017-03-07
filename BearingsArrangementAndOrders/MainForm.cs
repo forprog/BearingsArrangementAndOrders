@@ -29,7 +29,7 @@ namespace BearingsArrangementAndOrders
 
             curArranger.DoArrangement();
 
-            curExcel.ArrOrdersResultOutput(curArranger.BearingArrOrders);
+            curExcel.ArrOrdersResultOutput(curArranger.BearingArrOrders, curArranger.ItemsGroups);
 
         }
     }
