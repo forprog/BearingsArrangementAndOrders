@@ -29,33 +29,58 @@
         private void InitializeComponent()
         {
             this.button1 = new System.Windows.Forms.Button();
+            this.btFileNameSelect = new System.Windows.Forms.Button();
+            this.tbFileName = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(22, 43);
+            this.button1.Location = new System.Drawing.Point(16, 53);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(256, 65);
             this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
+            this.button1.Text = "Скомплектовать";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // btFileNameSelect
+            // 
+            this.btFileNameSelect.BackgroundImage = global::BearingsArrangementAndOrders.Properties.Resources.open_file16;
+            this.btFileNameSelect.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btFileNameSelect.Location = new System.Drawing.Point(241, 12);
+            this.btFileNameSelect.Name = "btFileNameSelect";
+            this.btFileNameSelect.Size = new System.Drawing.Size(31, 35);
+            this.btFileNameSelect.TabIndex = 1;
+            this.btFileNameSelect.UseVisualStyleBackColor = true;
+            this.btFileNameSelect.Click += new System.EventHandler(this.btFileNameSelect_Click);
+            // 
+            // tbFileName
+            // 
+            this.tbFileName.Location = new System.Drawing.Point(16, 17);
+            this.tbFileName.Name = "tbFileName";
+            this.tbFileName.Size = new System.Drawing.Size(219, 20);
+            this.tbFileName.TabIndex = 2;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ClientSize = new System.Drawing.Size(284, 127);
+            this.Controls.Add(this.tbFileName);
+            this.Controls.Add(this.btFileNameSelect);
             this.Controls.Add(this.button1);
             this.Name = "MainForm";
             this.Text = "Form1";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btFileNameSelect;
+        private System.Windows.Forms.TextBox tbFileName;
     }
 }
 
