@@ -21,7 +21,7 @@ namespace BearingsArrangementAndOrders
         {
             BearingArranger curArranger = new BearingArranger();
 
-            ExcelInterface curExcel = new ExcelInterface("C:\\Users\\zamyckijj-ei\\Google Диск\\Работа\\Комплектовка ПШ\\комплектовка суточного.xlsx");
+            ExcelInterface curExcel = new ExcelInterface(tbFileName.Text);
             curExcel.LoadItemTypesFromExcel(curArranger.ItemTypes);
             curExcel.LoadBearingTypesFromExcel(curArranger.BearingTypes, curArranger.ItemTypes);
             curExcel.LoadBearingArrangementOrderFromExcel(curArranger.BearingArrOrders, curArranger.BearingTypes);
@@ -31,6 +31,25 @@ namespace BearingsArrangementAndOrders
 
             curExcel.ArrOrdersResultOutput(curArranger.BearingArrOrders, curArranger.ItemsGroups);
 
+        }
+        private void btFileNameSelect_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
+            // Set filter options and filter index.
+            openFileDialog1.Filter = "Excel Files|*.xls;*.xlsm;*.xlsx";
+            openFileDialog1.FilterIndex = 1;
+
+            openFileDialog1.Multiselect = false;
+
+            // Call the ShowDialog method to show the dialog box.
+            var userClickedOK = openFileDialog1.ShowDialog();
+
+            // Process input if the user clicked OK.
+            if (userClickedOK == DialogResult.OK)
+            {
+                tbFileName.Text = openFileDialog1.FileName;
+            }
         }
     }
 }
