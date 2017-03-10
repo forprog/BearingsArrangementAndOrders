@@ -70,7 +70,8 @@
             this.Controls.Add(this.btFileNameSelect);
             this.Controls.Add(this.button1);
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "Комплектовка и заказ колец";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -51,5 +51,10 @@ namespace BearingsArrangementAndOrders
                 tbFileName.Text = openFileDialog1.FileName;
             }
         }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
