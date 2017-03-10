@@ -89,15 +89,16 @@ namespace BearingsArrangementAndOrders
                 var CurItemGroup = paramItemsGroups[ItemNumber];
                 if ((CurItemGroup.ItemCount > 0) && (CurItemGroup.ArrangementCount > 0))
                 {
-                    matches = FindBearingGroupsOfItemGroupInList(CurItemGroup, paramPossibleBearingGroups);
-                    matches.Sort((x, y) => x.Rad1Devation().CompareTo(y.Rad1Devation()));
+                    matches = FindBearingGroupsOfItemGroupInList(CurItemGroup, paramPossibleBearingGroups).OrderBy(RD => RD.Rad1Devation()).ThenByDescending(BC => BC.Count).ToList();
+                    //matches.OrderBy(RD => RD.Rad1Devation()).ThenBy(BC => BC.Count);
+                    
+                    //matches.Sort((x, y) => x.Rad1Devation().CompareTo(y.Rad1Devation()));
 
                     if (matches.Count > 0)
                     {
                         //перебираем все группы для данной детали, пока она не закончится
-                        for (int i = 0; i < matches.Count; i++)
+                        foreach (var curPossibleBearingGroup in matches)
                         {
-                            var curPossibleBearingGroup = matches[i];
                             BearingGroup curSolutionGroup = new BearingGroup(curPossibleBearingGroup);
                             curSolutionGroup.SetCount(Math.Min(curSolutionGroup.GetCount(), ArrOrderCount));
                             //todo добавить проверку минимального комплектуемого количества
