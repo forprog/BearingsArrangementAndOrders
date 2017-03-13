@@ -30,6 +30,10 @@ namespace BearingsArrangementAndOrders
             curArranger.DoArrangement();
 
             curExcel.ArrOrdersResultOutput(curArranger.BearingArrOrders, curArranger.ItemsGroups);
+            curExcel.Dispose();
+            //todo сообщение о завершении комплектовки
+            MessageBox.Show("Комплектовка завершена");
+
 
         }
         private void btFileNameSelect_Click(object sender, EventArgs e)

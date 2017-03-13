@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace BearingsArrangementAndOrders
 {
-    class ExcelInterface
+    class ExcelInterface: IDisposable
     {
 
         const string sBearingArrangementOrderListName = "Задание на комплектовку";
@@ -26,6 +26,8 @@ namespace BearingsArrangementAndOrders
         const int iItemsFirstRow = 3;
         const int iItemsFirstCol = 1;
 
+        bool disposed = false;
+
         private Microsoft.Office.Interop.Excel.Application pObjExcel;
         public Microsoft.Office.Interop.Excel.Application ObjExcel
         {
@@ -38,21 +40,70 @@ namespace BearingsArrangementAndOrders
             get { return pObjWorkBook; }
         }
 
-        ~ExcelInterface()
+        public void Dispose()
         {
-            //object misValue = System.Reflection.Missing.Value;
-
-            //todo закрытие Excel правильное
-            //Marshal.ReleaseComObject(pObjWorkBook);
-            //pObjWorkBook.Close(false);
-
-            //pObjExcel.Quit();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                object misValue = System.Reflection.Missing.Value;
+
+                //todo закрытие Excel правильное
+                //Marshal.ReleaseComObject(pObjWorkBook);
+                //try
+                //{
+                //    while (Marshal.ReleaseComObject(pObjWorkBook) > 0) ;
+                //}
+                //catch { }
+                //finally
+                //{
+                //    pObjWorkBook = null;
+                //};
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                pObjWorkBook.Close(false, misValue, misValue);
+                Marshal.FinalReleaseComObject(pObjWorkBook);
+                pObjWorkBook = null;
+
+                pObjExcel.Quit();
+                Marshal.FinalReleaseComObject(pObjExcel);
+                pObjExcel = null;
+
+                //try
+                //{
+                //    while (Marshal.ReleaseComObject(pObjExcel) > 0) ;
+                //}
+                //catch { }
+                //finally
+                //{
+                //}
+            }
+
+            disposed = true;
+        }
+
 
         public ExcelInterface(string paramFileName)
         {
+
             pObjExcel = new Microsoft.Office.Interop.Excel.Application();
-            pObjWorkBook = pObjExcel.Workbooks.Open(paramFileName, 0, false, 5, "", "", false, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "", true, false, 0, true, false, false);
+            var WorkBooks = pObjExcel.Workbooks;
+            pObjWorkBook = WorkBooks.Open(paramFileName, 0, false, 5, "", "", false, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "", true, false, 0, true, false, false);
+
+            Marshal.FinalReleaseComObject(WorkBooks);
+            WorkBooks = null;
+
         }
 
         static string NullToString(object Value)
@@ -82,7 +133,8 @@ namespace BearingsArrangementAndOrders
         public void LoadItemTypesFromExcel(List<BearingItemType> paramItemTypes)
         {
             Microsoft.Office.Interop.Excel.Worksheet Worksheet;
-            Worksheet = pObjWorkBook.Sheets[sBearingItemsTypesListName];
+            var Worksheets = pObjWorkBook.Sheets;
+            Worksheet = Worksheets[sBearingItemsTypesListName];
 
             int iExcelRowNumber = iBearingItemsTypesFirstRow;
             string sDescription;
@@ -105,7 +157,11 @@ namespace BearingsArrangementAndOrders
             }
             while (sDescription != "");
 
-            Marshal.ReleaseComObject(Worksheet);
+            Marshal.FinalReleaseComObject(Worksheet);
+            Worksheet = null;
+
+            Marshal.FinalReleaseComObject(Worksheets);
+            Worksheets = null;
 
         }
 
@@ -114,8 +170,8 @@ namespace BearingsArrangementAndOrders
         {
 
             Microsoft.Office.Interop.Excel.Worksheet Worksheet;
-            Worksheet = pObjWorkBook.Sheets[sBearingTypesListName];
-
+            var Worksheets = pObjWorkBook.Sheets;
+            Worksheet = Worksheets[sBearingTypesListName];
 
             int iExcelRowNumber = iBearingTypesFirstRow;
             string sDescription, sItem01Descr, sItem01Count,
@@ -174,14 +230,19 @@ namespace BearingsArrangementAndOrders
             }
             while (sDescription != "");
 
-            Marshal.ReleaseComObject(Worksheet);
+            Marshal.FinalReleaseComObject(Worksheet);
+            Worksheet = null;
+            Marshal.FinalReleaseComObject(Worksheets);
+            Worksheets = null;
+
         }
 
         public void LoadBearingArrangementOrderFromExcel(List<BearingsArrangementOrder> paramArrOrders, List<BearingType> paramBearingTypes)
         {
 
             Microsoft.Office.Interop.Excel.Worksheet Worksheet;
-            Worksheet = pObjWorkBook.Sheets[sBearingArrangementOrderListName];
+            var Worksheets = pObjWorkBook.Sheets;
+            Worksheet = Worksheets[sBearingArrangementOrderListName];
 
             int iExcelRowNumber = iBearingArrangementOrderFirstRow;
             string sDescription, sCount;
@@ -215,7 +276,11 @@ namespace BearingsArrangementAndOrders
             }
             while (sDescription != "");
 
-            Marshal.ReleaseComObject(Worksheet);
+            Marshal.FinalReleaseComObject(Worksheet);
+            Worksheet = null;
+            Marshal.FinalReleaseComObject(Worksheets);
+            Worksheets = null;
+
         }
 
         public void LoadBearingItemsGroupsFromExcel(List<BearingItemsGroup> paramItemsGroups, List<BearingItemType> paramBearingItemTypes)
@@ -227,7 +292,9 @@ namespace BearingsArrangementAndOrders
             BearingItemType curType;
             BearingItemsGroup curGroup;
 
-            foreach (Worksheet Worksheet in pObjWorkBook.Sheets)
+            var Worksheets = pObjWorkBook.Sheets;
+
+            foreach (Worksheet Worksheet in Worksheets)
             {
                 if (Worksheet.Name.Length > 6)
                 {
@@ -286,10 +353,12 @@ namespace BearingsArrangementAndOrders
 
                     }
                 }
-
-                Marshal.ReleaseComObject(Worksheet);
-
+                Marshal.FinalReleaseComObject(Worksheet);
             }
+
+            Marshal.FinalReleaseComObject(Worksheets);
+            Worksheets = null;
+
         }
 
         private void UsedItemsOutput(List<BearingItemsGroup> paramBearingItemsGroups)
@@ -352,7 +421,9 @@ namespace BearingsArrangementAndOrders
             }
 
             Marshal.ReleaseComObject(UsedItemsTemplateWorksheet);
+            UsedItemsTemplateWorksheet = null;
             Marshal.ReleaseComObject(UsedItemsWorksheet);
+            UsedItemsWorksheet = null;
         }
 
         public void ArrOrdersResultOutput(List<BearingsArrangementOrder> paramBearingArrOrders, List<BearingItemsGroup> paramBearingItemsGroups)
@@ -366,6 +437,7 @@ namespace BearingsArrangementAndOrders
 
         private void NotCompletedBearingsOutput(List<BearingsArrangementOrder> paramBearingArrOrders)
         {
+
             string sValue;
             const int iLastColNumber = 8;
 
@@ -491,6 +563,11 @@ namespace BearingsArrangementAndOrders
 
             pObjWorkBook.Save();
 
+            Marshal.ReleaseComObject(SolutionOutputWorksheet);
+            SolutionOutputWorksheet = null;
+            Marshal.ReleaseComObject(SolutionTemplateWorksheet);
+            SolutionTemplateWorksheet = null;
+
         }
 
         private void SolutionOutput(List<BearingsArrangementOrder> paramBearingArrOrders)
@@ -601,6 +678,11 @@ namespace BearingsArrangementAndOrders
             }
 
             pObjWorkBook.Save();
+
+            Marshal.ReleaseComObject(SolutionOutputWorksheet);
+            SolutionOutputWorksheet = null;
+            Marshal.ReleaseComObject(SolutionTemplateWorksheet);
+            SolutionTemplateWorksheet = null;
         }
 
     }
