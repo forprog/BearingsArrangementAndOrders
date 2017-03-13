@@ -14,6 +14,19 @@ namespace BearingsArrangementAndOrders
         public double? Rad1Nominal;
         public double? Rad1Min;
         public double? Rad1Max;
+        public double MinArrangeCount
+        {
+            get
+            {
+                return pMinArrangeCount;
+            }
+            set
+            {
+                pMinArrangeCount = Math.Max(1, value);
+            }
+        }
+        private double pMinArrangeCount = 1;
+
 
         public List<BearingItemsGroup> CreateItemGroupsToCompleteOrder(List<BearingItemsGroup> paramItemsGroups)
         {

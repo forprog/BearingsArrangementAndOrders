@@ -102,10 +102,9 @@ namespace BearingsArrangementAndOrders
                             BearingGroup curSolutionGroup = new BearingGroup(curPossibleBearingGroup);
                             curSolutionGroup.SetCount(Math.Min(curSolutionGroup.GetCount(), ArrOrderCount));
                             //todo добавить проверку минимального комплектуемого количества
-                            ArrOrderCount -= curSolutionGroup.Count;
-
-                            if (curSolutionGroup.Count > 0)
+                            if (curSolutionGroup.Count > paramArrOrder.BearingType.MinArrangeCount)
                             {
+                                ArrOrderCount -= curSolutionGroup.Count;
                                 foreach (var item in curSolutionGroup.BearingItemsGroups)
                                 {
                                     var curItemsGroup = item.Value;

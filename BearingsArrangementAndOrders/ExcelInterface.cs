@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace BearingsArrangementAndOrders
 {
-    class ExcelInterface: IDisposable
+    class ExcelInterface : IDisposable
     {
 
         const string sBearingArrangementOrderListName = "Задание на комплектовку";
@@ -117,11 +117,11 @@ namespace BearingsArrangementAndOrders
         {
             if ((sParamItemDescr != "") && (sParamItemCount != ""))
             {
-                var curFoundItemTypes =  from qItemType in paramItemTypes
-                                          where qItemType.Description == sParamItemDescr
-                                          select qItemType;
+                var curFoundItemTypes = from qItemType in paramItemTypes
+                                        where qItemType.Description == sParamItemDescr
+                                        select qItemType;
                 BearingItemType curItemType = curFoundItemTypes.First();
-                
+
                 //todo А если не нашли тип детали???
 
                 paramBearingType.ValidBearingItemTypes.Add(curItemType.Type, curItemType);
@@ -166,7 +166,7 @@ namespace BearingsArrangementAndOrders
         }
 
 
-        public void LoadBearingTypesFromExcel(List<BearingType> paramBearingTypes,List<BearingItemType> paramItemTypes)
+        public void LoadBearingTypesFromExcel(List<BearingType> paramBearingTypes, List<BearingItemType> paramItemTypes)
         {
 
             Microsoft.Office.Interop.Excel.Worksheet Worksheet;
@@ -179,7 +179,7 @@ namespace BearingsArrangementAndOrders
                 sItem92Descr, sItem92Count,
                 sItem52Descr, sItem52Count,
                 sItem04Descr, sItem04Count,
-                sR1Nom, sR1Min, sR1Max;
+                sR1Nom, sR1Min, sR1Max, sMinArrangeCount;
 
             do
             {
@@ -223,6 +223,9 @@ namespace BearingsArrangementAndOrders
 
                     sR1Max = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 13].Value);
                     CurBearingType.Rad1Max = Convert.ToDouble(sR1Max);
+
+                    sMinArrangeCount = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 14].Value);
+                    CurBearingType.MinArrangeCount = Convert.ToDouble(sMinArrangeCount);
 
                     paramBearingTypes.Add(CurBearingType);
                 }
@@ -574,11 +577,18 @@ namespace BearingsArrangementAndOrders
         {
             string sValue;
             const int iLastColNumber = 8;
+            int iExcelRowNumber = 3;
+            const int iBearingSectionHeight = 5;
+            const int iNumberOfSectionsOnPage = 8;
+            int iSectionNumber = 0;
 
             Worksheet SolutionTemplateWorksheet = pObjWorkBook.Sheets["ШаблонВыводаКомплектовка"];
             Worksheet SolutionOutputWorksheet = pObjWorkBook.Sheets["Комплектовка"];
 
-            SolutionOutputWorksheet.Cells.Delete();
+            //var iLastRow = SolutionOutputWorksheet.Range(SolutionOutputWorksheet.Rows.Count, 1).End(xlUp).Row;
+            var iFullRow = SolutionOutputWorksheet.Rows.Count;
+            var iLastRow = SolutionOutputWorksheet.Cells[iFullRow, 1].End(XlDirection.xlUp).Row;
+            SolutionOutputWorksheet.Range[SolutionOutputWorksheet.Cells[1, 1], SolutionOutputWorksheet.Cells[iLastRow+iBearingSectionHeight, iLastColNumber]].Delete();
 
             SolutionTemplateWorksheet.Range[SolutionTemplateWorksheet.Cells[1, 1], SolutionTemplateWorksheet.Cells[2, iLastColNumber]].Copy(SolutionOutputWorksheet.Cells[1, 1]);
             foreach (Range Cell in SolutionOutputWorksheet.Range[SolutionOutputWorksheet.Cells[1, 1], SolutionOutputWorksheet.Cells[2, iLastColNumber]])
@@ -593,11 +603,6 @@ namespace BearingsArrangementAndOrders
             }
 
             SolutionOutputWorksheet.PageSetup.PrintTitleRows = "$1:$2";
-
-            int iExcelRowNumber = 3;
-            int iBearingSectionHeight = 5;
-            int iNumberOfSectionsOnPage = 8;
-            int iSectionNumber = 0;
 
             foreach (var curSolution in paramBearingArrOrders)
             {

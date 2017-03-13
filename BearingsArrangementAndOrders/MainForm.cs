@@ -34,8 +34,8 @@ namespace BearingsArrangementAndOrders
             //todo сообщение о завершении комплектовки
             MessageBox.Show("Комплектовка завершена");
 
-
         }
+
         private void btFileNameSelect_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
