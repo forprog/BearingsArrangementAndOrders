@@ -162,13 +162,17 @@ namespace BearingsArrangementAndOrders
 
                 if (curNotCompletedGroup.Count > 0)
                 {
-                    paramSolution.Add(curNotCompletedGroup);
-                    paramNeededBearingCount -= curNotCompletedGroup.Count;
-                    foreach (var ItemGroup in paramUsedItems)
+                    if (curNotCompletedGroup.CheckMinItemsOrderCount())
                     {
-                        var iReservedItemCount = curNotCompletedGroup.Count * paramArrOrder.BearingType.BearingItemsCount[ItemGroup.ItemType.Type];
-                        ItemGroup.ReservedItemCount += iReservedItemCount;
-                        ItemGroup.ItemCount -= iReservedItemCount;
+
+                        paramSolution.Add(curNotCompletedGroup);
+                        paramNeededBearingCount -= curNotCompletedGroup.Count;
+                        foreach (var ItemGroup in paramUsedItems)
+                        {
+                            var iReservedItemCount = curNotCompletedGroup.Count * paramArrOrder.BearingType.BearingItemsCount[ItemGroup.ItemType.Type];
+                            ItemGroup.ReservedItemCount += iReservedItemCount;
+                            ItemGroup.ItemCount -= iReservedItemCount;
+                        }
                     }
                 }
 
@@ -179,6 +183,7 @@ namespace BearingsArrangementAndOrders
 
 
         private void MakeOrders(BearingsArrangementOrder paramArrOrder, List<BearingItemsGroup> paramItemsGroups, List<NotCompleteBearingGroup> paramSolution)
+            //формирование заказов на поступление колец на сборку
         {
             //если сюда попали - значит по-любому подшипник в нужном количестве из существующих деталей не комплектуется
             int iNeededBearingCount = paramArrOrder.OrderCount - paramArrOrder.ArrangedBearingsCount();
@@ -204,7 +209,7 @@ namespace BearingsArrangementAndOrders
             }
 
             //ищем перекрестные заказы для шара и одной из деталей
-            if ((cur04Items.Count > 0) && (curOtherItems.Count > 0))
+            if ((cur04Items.Count > 0))
             {
                 cur04Items.Sort((x, y) => x.ItemCount.CompareTo(y.ItemCount));
                 curOtherItems.Sort((x, y) => x.ItemCount.CompareTo(y.ItemCount));

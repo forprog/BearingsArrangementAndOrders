@@ -12,5 +12,16 @@ namespace BearingsArrangementAndOrders
         public string Type;//вид детали
         public double? Size1Max;
         public double? Size1Min;
+        public double MinOrderCount
+        {
+            get {
+                return Math.Max(1, pMinOrderCount);
+            }
+            set {
+                pMinOrderCount = value;
+            }
+        }
+
+        private double pMinOrderCount=1;
     }
 }

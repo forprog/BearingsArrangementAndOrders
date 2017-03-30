@@ -41,5 +41,24 @@ namespace BearingsArrangementAndOrders
 
         }
 
+        //проверка - чтобы заказы комплектовались не меньше минимально допустимого количества заказываемых деталей
+        public bool CheckMinItemsOrderCount()
+        {
+            bool bResult = true;
+            
+            foreach (var curNeededItemGroup in NeededBearingItemsGroups)
+            {
+                int ItemCount = Count * Type.BearingItemsCount[curNeededItemGroup.Value.ItemType.Type];
+                if (ItemCount < curNeededItemGroup.Value.ItemType.MinOrderCount)
+                {
+                    bResult = false;
+                    break;
+                }
+            }
+
+            return bResult;
+        }
+
+
     }
 }

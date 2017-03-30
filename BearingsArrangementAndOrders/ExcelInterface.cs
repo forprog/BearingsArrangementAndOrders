@@ -113,6 +113,12 @@ namespace BearingsArrangementAndOrders
 
         }
 
+        static double NullToDouble(object Value)
+        {
+
+            return Value == null ? 0 : Convert.ToDouble(NullToString(Value.ToString()));
+
+        }
         private void AddItemTypeToBearingType(BearingType paramBearingType, string sParamItemDescr, string sParamItemCount, List<BearingItemType> paramItemTypes)
         {
             if ((sParamItemDescr != "") && (sParamItemCount != ""))
@@ -148,9 +154,9 @@ namespace BearingsArrangementAndOrders
 
                     CurItemType.Description = sDescription;
                     CurItemType.Type = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 1].Value);
-                    CurItemType.Size1Min = Convert.ToDouble(NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 2].Value));
-                    CurItemType.Size1Max = Convert.ToDouble(NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 3].Value));
-
+                    CurItemType.Size1Min = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 2].Value);
+                    CurItemType.Size1Max = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 3].Value);
+                    CurItemType.MinOrderCount = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 4].Value);
                     paramItemTypes.Add(CurItemType);
                 }
                 iExcelRowNumber++;
