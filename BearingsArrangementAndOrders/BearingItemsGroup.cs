@@ -103,5 +103,10 @@ namespace BearingsArrangementAndOrders
             return bReturn;
         }
 
+        public void SetSize1ToMiddle()
+        {
+            Size1 = Size1Min.GetValueOrDefault() + (Size1Max.GetValueOrDefault() - Size1Min.GetValueOrDefault()) / 2;
+        }
+
     }
 }

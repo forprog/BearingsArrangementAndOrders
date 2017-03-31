@@ -14,6 +14,7 @@ namespace BearingsArrangementAndOrders
 
         public double Rad1Devation()
         {
+            //todo проверить корректность
             return Math.Abs((Type.Rad1Max.GetValueOrDefault()-Type.Rad1Min.GetValueOrDefault())/2-Rad1());
         } 
 

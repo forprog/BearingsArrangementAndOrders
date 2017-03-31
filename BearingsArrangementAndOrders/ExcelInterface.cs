@@ -99,7 +99,7 @@ namespace BearingsArrangementAndOrders
 
             pObjExcel = new Microsoft.Office.Interop.Excel.Application();
             var WorkBooks = pObjExcel.Workbooks;
-            pObjWorkBook = WorkBooks.Open(paramFileName, 0, false, 5, "", "", false, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "", true, false, 0, true, false, false);
+            pObjWorkBook = WorkBooks.Open(paramFileName, 0, false, 5, "", "", false, XlPlatform.xlWindows, "", true, false, 0, true, false, false);
 
             Marshal.FinalReleaseComObject(WorkBooks);
             WorkBooks = null;
@@ -436,12 +436,75 @@ namespace BearingsArrangementAndOrders
             UsedItemsWorksheet = null;
         }
 
-        public void ArrOrdersResultOutput(List<BearingsArrangementOrder> paramBearingArrOrders, List<BearingItemsGroup> paramBearingItemsGroups)
+        private void GrindingOrdersOutput(List<BearingItemsGroup> paramGrindingOrders)
+        {
+            string sValue;
+            const int iLastColNumber = 3;
+
+            Worksheet GrindingOrdersTemplateWorksheet = pObjWorkBook.Sheets["ШаблонВыводаДеталиДокомплект"];
+            Worksheet GrindingOrdersWorksheet = pObjWorkBook.Sheets["ДеталиДокомплект"];
+
+            GrindingOrdersWorksheet.Cells.Delete();
+
+            GrindingOrdersTemplateWorksheet.Range[GrindingOrdersTemplateWorksheet.Cells[1, 1], GrindingOrdersTemplateWorksheet.Cells[2, iLastColNumber]].Copy(GrindingOrdersWorksheet.Cells[1, 1]);
+            foreach (Range Cell in GrindingOrdersWorksheet.Range[GrindingOrdersWorksheet.Cells[1, 1], GrindingOrdersWorksheet.Cells[2, iLastColNumber]])
+            {
+                sValue = NullToString(Cell.Value);
+                switch (sValue)
+                {
+                    case "ДатаВремяКомплектовки":
+                        Cell.Value = "Время комплектовки: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ");
+                        break;
+                }
+            }
+
+            GrindingOrdersWorksheet.PageSetup.PrintTitleRows = "$1:$2";
+
+            int iExcelRowNumber = 3;
+
+            foreach (var curItemsGroup in paramGrindingOrders)
+            {
+
+                GrindingOrdersTemplateWorksheet.Range[GrindingOrdersTemplateWorksheet.Cells[3, 1], GrindingOrdersTemplateWorksheet.Cells[3, iLastColNumber]].Copy(GrindingOrdersWorksheet.Cells[iExcelRowNumber, 1]);
+
+                foreach (Range Cell in GrindingOrdersWorksheet.Range[GrindingOrdersWorksheet.Cells[iExcelRowNumber, 1], GrindingOrdersWorksheet.Cells[iExcelRowNumber, iLastColNumber]])
+                {
+                    sValue = NullToString(Cell.Value);
+                    Cell.Value = "";
+                    switch (sValue)
+                    {
+                        //Деталь	Размер1	Количество
+
+                        case "Деталь":
+                            Cell.Value = curItemsGroup.ItemType.Description;
+                            break;
+                        case "Размер1":
+                            Cell.Value = curItemsGroup.Size1;
+                            break;
+                        case "Количество":
+                            Cell.Value = curItemsGroup.ItemCount;
+                            break;
+                    }
+                }
+                iExcelRowNumber++;
+            }
+
+            Marshal.ReleaseComObject(GrindingOrdersTemplateWorksheet);
+            GrindingOrdersTemplateWorksheet = null;
+            Marshal.ReleaseComObject(GrindingOrdersWorksheet);
+            GrindingOrdersWorksheet = null;
+        }
+
+
+        public void ArrOrdersResultOutput(List<BearingsArrangementOrder> paramBearingArrOrders, List<BearingItemsGroup> paramBearingItemsGroups, List<BearingItemsGroup> paramGrindingOrders)
         {
 
             SolutionOutput(paramBearingArrOrders);
             NotCompletedBearingsOutput(paramBearingArrOrders);
             UsedItemsOutput(paramBearingItemsGroups);
+            GrindingOrdersOutput(paramGrindingOrders);
+
+            pObjWorkBook.Save();
 
         }
 
@@ -571,7 +634,6 @@ namespace BearingsArrangementAndOrders
                 }
             }
 
-            pObjWorkBook.Save();
 
             Marshal.ReleaseComObject(SolutionOutputWorksheet);
             SolutionOutputWorksheet = null;
@@ -688,8 +750,6 @@ namespace BearingsArrangementAndOrders
                     }
                 }
             }
-
-            pObjWorkBook.Save();
 
             Marshal.ReleaseComObject(SolutionOutputWorksheet);
             SolutionOutputWorksheet = null;

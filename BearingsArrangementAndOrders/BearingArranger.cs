@@ -13,7 +13,7 @@ namespace BearingsArrangementAndOrders
         public List<BearingsArrangementOrder> BearingArrOrders = new List<BearingsArrangementOrder> { };
         public List<BearingItemsGroup> ItemsGroups = new List<BearingItemsGroup> { };
         public List<BearingItemType> ItemTypes = new List<BearingItemType> { };
-
+        public List<BearingItemsGroup> GrindingOrders = new List<BearingItemsGroup>();
 
         private void CheckArrangement(List<BearingItemsGroup> paramPreviousItemGroups, int paramLevel, int paramMaxLevel, BearingType paramBearingType, List<List<BearingItemsGroup>> paramItemsGroupsList, List<BearingGroup> paramPossibleBearingGroups)
         {
@@ -180,12 +180,11 @@ namespace BearingsArrangementAndOrders
 
         }
 
-
-
         private void MakeOrders(BearingsArrangementOrder paramArrOrder, List<BearingItemsGroup> paramItemsGroups, List<NotCompleteBearingGroup> paramSolution)
         //формирование заказов на поступление колец на сборку
         {
             //если сюда попали - значит по-любому подшипник в нужном количестве из существующих деталей не комплектуется
+
             int iNeededBearingCount = paramArrOrder.OrderCount - paramArrOrder.ArrangedBearingsCount();
             List<BearingItemsGroup> cur04Items = new List<BearingItemsGroup>(),
                                     curOtherItems = new List<BearingItemsGroup>();
@@ -231,7 +230,6 @@ namespace BearingsArrangementAndOrders
                     }
                 }
 
-
                 if (iNeededBearingCount > 0)//перекрестных заказов недостаточно, делаем заказы от шара
                 {
                     for (int i04ItemNumber = 0; (i04ItemNumber < cur04Items.Count) && (!bOrdersComplete); i04ItemNumber++)
@@ -251,6 +249,7 @@ namespace BearingsArrangementAndOrders
         public void DoArrangement()
         {
             var CurrentSolution = new List<BearingGroup> { };
+            List<BearingItemsGroup> curGrindingOrders = new List<BearingItemsGroup>();
 
             //сначала комплектуем все заказы
             foreach (BearingsArrangementOrder curArrOrder in BearingArrOrders)
@@ -295,8 +294,33 @@ namespace BearingsArrangementAndOrders
                 {
                     //скомплектовалось недостаточно, надо дозаказывать
                     MakeOrders(curArrOrder, curItemsGroups, curArrOrder.NotCompletedBearings);
+
+                    //соберем в кучу одинаковые заказы на детали
+                    foreach (var curNotCompletedBearing in curArrOrder.NotCompletedBearings)
+                    {
+                        foreach (var NeededGroup in curNotCompletedBearing.NeededBearingItemsGroups)
+                        {
+                            var curItemGroup = from qGrOrder in curGrindingOrders
+                                               where (qGrOrder.ItemType == NeededGroup.Value.ItemType) && (qGrOrder.Size1 == NeededGroup.Value.Size1)
+                                               select qGrOrder;
+                            if (curItemGroup.Count() > 0)
+                            {
+                                curItemGroup.First().ItemCount += curNotCompletedBearing.Type.BearingItemsCount[NeededGroup.Value.ItemType.Type] * curNotCompletedBearing.Count;
+                            }
+                            else
+                            {
+                                var curGroup = new BearingItemsGroup();
+                                curGroup.ItemType = NeededGroup.Value.ItemType;
+                                curGroup.Size1 = NeededGroup.Value.Size1;
+                                curGroup.ItemCount = curNotCompletedBearing.Type.BearingItemsCount[NeededGroup.Value.ItemType.Type] * curNotCompletedBearing.Count;
+                                curGrindingOrders.Add(curGroup);
+                            }
+                        }
+                    }
                 }
             }
+
+            GrindingOrders = curGrindingOrders.OrderBy(ItemType => ItemType.ItemType.Type).ThenBy(Size1 => Size1.Size1).ToList();
 
         }
     }

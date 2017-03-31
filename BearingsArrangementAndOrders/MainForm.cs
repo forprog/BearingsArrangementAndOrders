@@ -29,7 +29,7 @@ namespace BearingsArrangementAndOrders
 
             curArranger.DoArrangement();
 
-            curExcel.ArrOrdersResultOutput(curArranger.BearingArrOrders, curArranger.ItemsGroups);
+            curExcel.ArrOrdersResultOutput(curArranger.BearingArrOrders, curArranger.ItemsGroups, curArranger.GrindingOrders);
             curExcel.Dispose();
             //todo сообщение о завершении комплектовки
             MessageBox.Show("Комплектовка завершена");

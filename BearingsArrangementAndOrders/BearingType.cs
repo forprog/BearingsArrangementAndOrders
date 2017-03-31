@@ -45,6 +45,7 @@ namespace BearingsArrangementAndOrders
                     curGroup02.ItemType = ValidBearingItemTypes["02"];
                     curGroup02.Size1Max = Rad1Nominal + dItemsGroups["01"].Size1 - 2 * dItemsGroups["04"].Size1 - Rad1Min;
                     curGroup02.Size1Min = Rad1Nominal + dItemsGroups["01"].Size1 - 2 * dItemsGroups["04"].Size1 - Rad1Max;
+                    curGroup02.SetSize1ToMiddle();
                     if (curGroup02.DoValid())
                     {
                         result.Add(curGroup02);
@@ -56,6 +57,7 @@ namespace BearingsArrangementAndOrders
                     curGroup01.ItemType = ValidBearingItemTypes["01"];
                     curGroup01.Size1Max = Rad1Max - Rad1Nominal + dItemsGroups["02"].Size1 + 2 * dItemsGroups["04"].Size1;
                     curGroup01.Size1Min = Rad1Min - Rad1Nominal + dItemsGroups["02"].Size1 + 2 * dItemsGroups["04"].Size1;
+                    curGroup01.SetSize1ToMiddle();
                     if (curGroup01.DoValid())
                     {
                         result.Add(curGroup01);
@@ -67,6 +69,7 @@ namespace BearingsArrangementAndOrders
                     curGroup01.ItemType = ValidBearingItemTypes["01"];
                     curGroup01.Size1Max = dItemsGroups["04"].Size1 + (Rad1Max - Rad1Min) / 4;
                     curGroup01.Size1Min = dItemsGroups["04"].Size1 - (Rad1Max - Rad1Min) / 4;
+                    curGroup01.SetSize1ToMiddle();
 
                     if (curGroup01.DoValid())
                     {
@@ -77,6 +80,7 @@ namespace BearingsArrangementAndOrders
                     curGroup02.ItemType = ValidBearingItemTypes["02"];
                     curGroup02.Size1Max = -dItemsGroups["04"].Size1 + (Rad1Max - Rad1Min) / 4;
                     curGroup02.Size1Min = -dItemsGroups["04"].Size1 - (Rad1Max - Rad1Min) / 4;
+                    curGroup02.SetSize1ToMiddle();
 
                     if (curGroup02.DoValid())
                     {
