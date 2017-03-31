@@ -77,9 +77,9 @@ namespace BearingsArrangementAndOrders
             List<BearingGroup> matches;
 
             //будем комплектовать по массовости шара
-            var IEnumItemsGroups =  from qItemsGroup in paramItemsGroups
-                                     where qItemsGroup.ItemType.Type == "04"
-                                     select qItemsGroup;
+            var IEnumItemsGroups = from qItemsGroup in paramItemsGroups
+                                   where qItemsGroup.ItemType.Type == "04"
+                                   select qItemsGroup;
             paramItemsGroups = IEnumItemsGroups.ToList();
 
             paramItemsGroups.Sort((x, y) => y.ArrangementCount.CompareTo(x.ArrangementCount));//сортировка от наименее к наиболее востребованным деталям
@@ -91,7 +91,7 @@ namespace BearingsArrangementAndOrders
                 {
                     matches = FindBearingGroupsOfItemGroupInList(CurItemGroup, paramPossibleBearingGroups).OrderBy(RD => RD.Rad1Devation()).ThenByDescending(BC => BC.Count).ToList();
                     //matches.OrderBy(RD => RD.Rad1Devation()).ThenBy(BC => BC.Count);
-                    
+
                     //matches.Sort((x, y) => x.Rad1Devation().CompareTo(y.Rad1Devation()));
 
                     if (matches.Count > 0)
@@ -183,7 +183,7 @@ namespace BearingsArrangementAndOrders
 
 
         private void MakeOrders(BearingsArrangementOrder paramArrOrder, List<BearingItemsGroup> paramItemsGroups, List<NotCompleteBearingGroup> paramSolution)
-            //формирование заказов на поступление колец на сборку
+        //формирование заказов на поступление колец на сборку
         {
             //если сюда попали - значит по-любому подшипник в нужном количестве из существующих деталей не комплектуется
             int iNeededBearingCount = paramArrOrder.OrderCount - paramArrOrder.ArrangedBearingsCount();
@@ -252,10 +252,11 @@ namespace BearingsArrangementAndOrders
         {
             var CurrentSolution = new List<BearingGroup> { };
 
+            //сначала комплектуем все заказы
             foreach (BearingsArrangementOrder curArrOrder in BearingArrOrders)
             {
 
-                List<BearingGroup> PossibleBearingGroups = new List<BearingGroup> { };
+                //List<BearingGroup> PossibleBearingGroups = new List<BearingGroup> { };
                 List<List<BearingItemsGroup>> curItemsGroupsLists = new List<List<BearingItemsGroup>> { };
                 List<BearingGroup> curPossibleBearingGroups = new List<BearingGroup> { };
                 List<BearingItemsGroup> curItemsGroups = new List<BearingItemsGroup> { };
@@ -275,6 +276,20 @@ namespace BearingsArrangementAndOrders
 
                 FindSolution(curArrOrder, curPossibleBearingGroups, curItemsGroups, curArrOrder.ArrangedBearings);
                 curArrOrder.ArrangedBearings.Sort((x, y) => x.BearingItemsGroups["04"].Size1.CompareTo(y.BearingItemsGroups["04"].Size1));
+            }
+
+            //потом делаем заказы на докомплектовку
+            foreach (BearingsArrangementOrder curArrOrder in BearingArrOrders)
+            {
+                List<BearingItemsGroup> curItemsGroups = new List<BearingItemsGroup> { };
+
+                foreach (var curItemType in curArrOrder.BearingType.ValidBearingItemTypes)
+                {
+                    IEnumerable<BearingItemsGroup> curItemGroups = from qGroups in ItemsGroups
+                                                                   where (qGroups.ItemType.Description == curItemType.Value.Description) && (qGroups.ItemCount > 0)
+                                                                   select qGroups;
+                    curItemsGroups.AddRange(curItemGroups.ToList());
+                }
 
                 if (curArrOrder.ArrangedBearingsCount() < curArrOrder.OrderCount)
                 {
@@ -282,6 +297,7 @@ namespace BearingsArrangementAndOrders
                     MakeOrders(curArrOrder, curItemsGroups, curArrOrder.NotCompletedBearings);
                 }
             }
+
         }
     }
 }
