@@ -157,6 +157,7 @@ namespace BearingsArrangementAndOrders
                     CurItemType.Size1Min = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 2].Value);
                     CurItemType.Size1Max = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 3].Value);
                     CurItemType.MinOrderCount = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 4].Value);
+                    CurItemType.Size1MinDifference = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 5].Value);
                     paramItemTypes.Add(CurItemType);
                 }
                 iExcelRowNumber++;

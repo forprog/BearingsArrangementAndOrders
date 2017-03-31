@@ -12,6 +12,7 @@ namespace BearingsArrangementAndOrders
         public string Type;//вид детали
         public double? Size1Max;
         public double? Size1Min;
+        public double? Size1MinDifference;
         public double MinOrderCount
         {
             get {

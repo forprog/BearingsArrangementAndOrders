@@ -84,7 +84,7 @@ namespace BearingsArrangementAndOrders
         public bool DoValid()
         {
             bool bReturn = false;
-            if ((Size1Max.HasValue)&&(Size1Min.HasValue))
+            if ((Size1Max.HasValue) && (Size1Min.HasValue))
             {
                 double iSize1Max = Size1Max ?? 0;
                 double iSize1Min = Size1Min ?? 0;
@@ -92,9 +92,12 @@ namespace BearingsArrangementAndOrders
                 double iTypeSize1Min = ItemType.Size1Min ?? 0;
                 if ((iSize1Max > iTypeSize1Min) && (iSize1Min < iTypeSize1Max))
                 {
-                    Size1Max = Math.Min(iSize1Max , iTypeSize1Max);
-                    Size1Min = Math.Max(iSize1Min , iTypeSize1Min);
-                    bReturn = true;
+                    Size1Max = Math.Min(iSize1Max, iTypeSize1Max);
+                    Size1Min = Math.Max(iSize1Min, iTypeSize1Min);
+                    if ((Size1Max - Size1Min) >= ItemType.Size1MinDifference)
+                    {
+                        bReturn = true;
+                    }
                 }
             }
             return bReturn;
