@@ -210,8 +210,8 @@ namespace BearingsArrangementAndOrders
             //ищем перекрестные заказы для шара и одной из деталей
             if ((cur04Items.Count > 0))
             {
-                cur04Items.Sort((x, y) => x.ItemCount.CompareTo(y.ItemCount));
-                curOtherItems.Sort((x, y) => x.ItemCount.CompareTo(y.ItemCount));
+                cur04Items.Sort((x, y) => y.ItemCount.CompareTo(x.ItemCount));
+                curOtherItems.Sort((x, y) => y.ItemCount.CompareTo(x.ItemCount));
                 bool bOrdersComplete = false;
 
                 for (int i04ItemNumber = 0; (i04ItemNumber < cur04Items.Count) && (!bOrdersComplete); i04ItemNumber++)
