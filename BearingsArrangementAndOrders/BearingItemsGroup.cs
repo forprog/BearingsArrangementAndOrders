@@ -94,7 +94,8 @@ namespace BearingsArrangementAndOrders
                 {
                     Size1Max = Math.Min(iSize1Max, iTypeSize1Max);
                     Size1Min = Math.Max(iSize1Min, iTypeSize1Min);
-                    if ((Size1Max - Size1Min) >= ItemType.Size1MinDifference)
+                    SetSize1ToMiddle();
+                    if (((Size1Max - Size1Min) >= ItemType.Size1MinDifference) && (Size1 >= iTypeSize1Min) && (Size1 <= iTypeSize1Max))
                     {
                         bReturn = true;
                     }
@@ -103,7 +104,7 @@ namespace BearingsArrangementAndOrders
             return bReturn;
         }
 
-        public void SetSize1ToMiddle()
+        private void SetSize1ToMiddle()
         {
             Size1 = Size1Min.GetValueOrDefault() + (Size1Max.GetValueOrDefault() - Size1Min.GetValueOrDefault()) / 2;
         }

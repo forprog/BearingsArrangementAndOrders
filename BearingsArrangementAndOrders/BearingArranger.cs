@@ -214,18 +214,28 @@ namespace BearingsArrangementAndOrders
                 curOtherItems.Sort((x, y) => y.ItemCount.CompareTo(x.ItemCount));
                 bool bOrdersComplete = false;
 
+
+
                 for (int i04ItemNumber = 0; (i04ItemNumber < cur04Items.Count) && (!bOrdersComplete); i04ItemNumber++)
                 {
                     var cur04Group = cur04Items[i04ItemNumber];
-                    for (int iOtherItemNumber = 0; (iOtherItemNumber < curOtherItems.Count) && (!bOrdersComplete); iOtherItemNumber++)
+                    //поищем соседние размеры шара в пределах +/- допуск на диаметр/2
+                    var cur04ItemsGoodSize = (from qItem04 in cur04Items where (qItem04.Size1 >= (cur04Group.Size1 - cur04Group.ItemType.Size1MinDifference / 2)) && (qItem04.Size1 <= (cur04Group.Size1 + cur04Group.ItemType.Size1MinDifference / 2)) && (qItem04.ItemCount > 0) orderby qItem04.ItemCount select qItem04).ToList();
+                    for (int i04ItemNumber1 = 0; (i04ItemNumber1 < cur04ItemsGoodSize.Count) && (!bOrdersComplete); i04ItemNumber1++)
                     {
-                        var curOtherItemGroup = curOtherItems[iOtherItemNumber];
-                        if (curOtherItemGroup.ItemCount > 0)
+                        var cur04Group1 = cur04ItemsGoodSize[i04ItemNumber1];
+                        for (int iOtherItemNumber = 0; (iOtherItemNumber < curOtherItems.Count) && (!bOrdersComplete); iOtherItemNumber++)
                         {
-                            AddOrdersToSolution(paramArrOrder, new List<BearingItemsGroup> { cur04Group, curOtherItemGroup }, ref iNeededBearingCount, paramSolution);
+                            var curOtherItemGroup = curOtherItems[iOtherItemNumber];
+                            if (curOtherItemGroup.ItemCount > 0)
+                            {
+                                AddOrdersToSolution(paramArrOrder, new List<BearingItemsGroup> { cur04Group1, curOtherItemGroup }, ref iNeededBearingCount, paramSolution);
 
-                            if (iNeededBearingCount == 0) { bOrdersComplete = true; }
-
+                                if (iNeededBearingCount == 0)
+                                {
+                                    bOrdersComplete = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -235,9 +245,16 @@ namespace BearingsArrangementAndOrders
                     for (int i04ItemNumber = 0; (i04ItemNumber < cur04Items.Count) && (!bOrdersComplete); i04ItemNumber++)
                     {
                         var cur04Group = cur04Items[i04ItemNumber];
-                        if (cur04Group.ItemCount > 0)
+                        //поищем соседние размеры шара в пределах +/- допуск на диаметр/2
+                        var cur04ItemsGoodSize = (from qItem04 in cur04Items
+                                                 where (qItem04.Size1 >= cur04Group.Size1 - cur04Group.ItemType.Size1MinDifference / 2) && (qItem04.Size1 <= cur04Group.Size1 + cur04Group.ItemType.Size1MinDifference / 2)
+                                                        && (qItem04.ItemCount > 0)
+                                                 orderby qItem04.ItemCount
+                                                 select qItem04).ToList();
+                        for (int i04ItemNumber1 = 0; (i04ItemNumber1 < cur04ItemsGoodSize.Count) && (!bOrdersComplete); i04ItemNumber1++)
                         {
-                            AddOrdersToSolution(paramArrOrder, new List<BearingItemsGroup> { cur04Group }, ref iNeededBearingCount, paramSolution);
+                            var cur04Group1 = cur04ItemsGoodSize[i04ItemNumber1];
+                            AddOrdersToSolution(paramArrOrder, new List<BearingItemsGroup> { cur04Group1 }, ref iNeededBearingCount, paramSolution);
 
                             if (iNeededBearingCount == 0) { bOrdersComplete = true; }
                         }
