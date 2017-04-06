@@ -221,6 +221,7 @@ namespace BearingsArrangementAndOrders
                     var cur04Group = cur04Items[i04ItemNumber];
                     //поищем соседние размеры шара в пределах +/- допуск на диаметр/2
                     var cur04ItemsGoodSize = (from qItem04 in cur04Items where (qItem04.Size1 >= (cur04Group.Size1 - cur04Group.ItemType.Size1MinDifference / 2)) && (qItem04.Size1 <= (cur04Group.Size1 + cur04Group.ItemType.Size1MinDifference / 2)) && (qItem04.ItemCount > 0) orderby qItem04.ItemCount select qItem04).ToList();
+                    cur04ItemsGoodSize.Sort((x, y) => y.ItemCount.CompareTo(x.ItemCount));
                     for (int i04ItemNumber1 = 0; (i04ItemNumber1 < cur04ItemsGoodSize.Count) && (!bOrdersComplete); i04ItemNumber1++)
                     {
                         var cur04Group1 = cur04ItemsGoodSize[i04ItemNumber1];
@@ -251,6 +252,7 @@ namespace BearingsArrangementAndOrders
                                                         && (qItem04.ItemCount > 0)
                                                  orderby qItem04.ItemCount
                                                  select qItem04).ToList();
+                        cur04ItemsGoodSize.Sort((x, y) => y.ItemCount.CompareTo(x.ItemCount));
                         for (int i04ItemNumber1 = 0; (i04ItemNumber1 < cur04ItemsGoodSize.Count) && (!bOrdersComplete); i04ItemNumber1++)
                         {
                             var cur04Group1 = cur04ItemsGoodSize[i04ItemNumber1];
