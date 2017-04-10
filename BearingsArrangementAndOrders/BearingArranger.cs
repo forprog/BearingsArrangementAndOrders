@@ -76,13 +76,14 @@ namespace BearingsArrangementAndOrders
                 ArrOrderCount = paramArrOrder.OrderCount;
             List<BearingGroup> matches;
 
-            //будем комплектовать по массовости шара
+            //будем комплектовать по массовости шара, которая была получена до запуска комплектовки
             var IEnumItemsGroups = from qItemsGroup in paramItemsGroups
                                    where qItemsGroup.ItemType.Type == "04"
+                                   orderby qItemsGroup.SortOrder descending
                                    select qItemsGroup;
             paramItemsGroups = IEnumItemsGroups.ToList();
 
-            paramItemsGroups.Sort((x, y) => y.ArrangementCount.CompareTo(x.ArrangementCount));//сортировка от наименее к наиболее востребованным деталям
+            //paramItemsGroups.Sort((x, y) => y.ArrangementCount.CompareTo(x.ArrangementCount));//сортировка от наименее к наиболее востребованным деталям
 
             for (ItemNumber = 0; (ItemNumber < paramItemsGroups.Count) && (ArrOrderCount > 0); ItemNumber++)
             {
@@ -210,7 +211,7 @@ namespace BearingsArrangementAndOrders
             //ищем перекрестные заказы для шара и одной из деталей
             if ((cur04Items.Count > 0))
             {
-                cur04Items.Sort((x, y) => y.ItemCount.CompareTo(x.ItemCount));
+                cur04Items.Sort((x, y) => y.SortOrder.CompareTo(x.SortOrder));
                 curOtherItems.Sort((x, y) => y.ItemCount.CompareTo(x.ItemCount));
                 bool bOrdersComplete = false;
 
@@ -220,8 +221,11 @@ namespace BearingsArrangementAndOrders
                 {
                     var cur04Group = cur04Items[i04ItemNumber];
                     //поищем соседние размеры шара в пределах +/- допуск на диаметр/2
-                    var cur04ItemsGoodSize = (from qItem04 in cur04Items where (qItem04.Size1 >= (cur04Group.Size1 - cur04Group.ItemType.Size1MinDifference / 2)) && (qItem04.Size1 <= (cur04Group.Size1 + cur04Group.ItemType.Size1MinDifference / 2)) && (qItem04.ItemCount > 0) orderby qItem04.ItemCount select qItem04).ToList();
-                    cur04ItemsGoodSize.Sort((x, y) => y.ItemCount.CompareTo(x.ItemCount));
+                    var cur04ItemsGoodSize = (from qItem04 in cur04Items
+                                              where (qItem04.Size1 >= (cur04Group.Size1 - cur04Group.ItemType.Size1MinDifference / 2)) && (qItem04.Size1 <= (cur04Group.Size1 + cur04Group.ItemType.Size1MinDifference / 2)) && (qItem04.ItemCount > 0)
+                                              orderby qItem04.SortOrder descending
+                                              select qItem04).ToList();
+                    //cur04ItemsGoodSize.Sort((x, y) => y.SortOrder.CompareTo(x.SortOrder));
                     for (int i04ItemNumber1 = 0; (i04ItemNumber1 < cur04ItemsGoodSize.Count) && (!bOrdersComplete); i04ItemNumber1++)
                     {
                         var cur04Group1 = cur04ItemsGoodSize[i04ItemNumber1];
@@ -248,11 +252,11 @@ namespace BearingsArrangementAndOrders
                         var cur04Group = cur04Items[i04ItemNumber];
                         //поищем соседние размеры шара в пределах +/- допуск на диаметр/2
                         var cur04ItemsGoodSize = (from qItem04 in cur04Items
-                                                 where (qItem04.Size1 >= cur04Group.Size1 - cur04Group.ItemType.Size1MinDifference / 2) && (qItem04.Size1 <= cur04Group.Size1 + cur04Group.ItemType.Size1MinDifference / 2)
-                                                        && (qItem04.ItemCount > 0)
-                                                 orderby qItem04.ItemCount
-                                                 select qItem04).ToList();
-                        cur04ItemsGoodSize.Sort((x, y) => y.ItemCount.CompareTo(x.ItemCount));
+                                                  where (qItem04.Size1 >= cur04Group.Size1 - cur04Group.ItemType.Size1MinDifference / 2) && (qItem04.Size1 <= cur04Group.Size1 + cur04Group.ItemType.Size1MinDifference / 2)
+                                                         && (qItem04.ItemCount > 0)
+                                                  orderby qItem04.SortOrder descending
+                                                  select qItem04).ToList();
+                        //cur04ItemsGoodSize.Sort((x, y) => y.ItemCount.CompareTo(x.ItemCount));
                         for (int i04ItemNumber1 = 0; (i04ItemNumber1 < cur04ItemsGoodSize.Count) && (!bOrdersComplete); i04ItemNumber1++)
                         {
                             var cur04Group1 = cur04ItemsGoodSize[i04ItemNumber1];
@@ -269,6 +273,18 @@ namespace BearingsArrangementAndOrders
         {
             var CurrentSolution = new List<BearingGroup> { };
             List<BearingItemsGroup> curGrindingOrders = new List<BearingItemsGroup>();
+
+            //отсортировать шарики по количеству в кучах
+            var cur04Items = from qGroups in ItemsGroups
+                             where qGroups.ItemType.Type == "04"
+                             orderby qGroups.ItemCount
+                             select qGroups;
+            int iItemGroupNumber = 0;
+            foreach (var curItemGroup in cur04Items)
+            {
+                curItemGroup.SortOrder = iItemGroupNumber;
+                iItemGroupNumber++;
+            }
 
             //сначала комплектуем все заказы
             foreach (BearingsArrangementOrder curArrOrder in BearingArrOrders)

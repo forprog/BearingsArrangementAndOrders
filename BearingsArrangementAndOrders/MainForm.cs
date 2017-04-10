@@ -31,7 +31,8 @@ namespace BearingsArrangementAndOrders
 
             curExcel.ArrOrdersResultOutput(curArranger.BearingArrOrders, curArranger.ItemsGroups, curArranger.GrindingOrders);
             curExcel.Dispose();
-            //todo сообщение о завершении комплектовки
+            
+            //сообщение о завершении комплектовки
             MessageBox.Show("Комплектовка завершена");
 
         }

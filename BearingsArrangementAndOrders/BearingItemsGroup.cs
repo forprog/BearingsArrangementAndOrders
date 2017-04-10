@@ -25,6 +25,7 @@ namespace BearingsArrangementAndOrders
         public BearingItemType ItemType;
 
         public long ArrangementCount;
+        public int SortOrder = 0;
 
         public void AddBearingItemsGroupToGroup(BearingItemsGroup paramBearingItemsGorup)
         {
