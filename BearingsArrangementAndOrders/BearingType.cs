@@ -63,10 +63,13 @@ namespace BearingsArrangementAndOrders
                 }
                 else//нет ни 01, ни 02
                 {
+                    double? Rad1Mid;
                     var curGroup01 = new BearingItemsGroup();
+
+                    Rad1Mid = Rad1Max - (Rad1Max - Rad1Min) / 2;
                     curGroup01.ItemType = ValidBearingItemTypes["01"];
-                    curGroup01.Size1Max = dItemsGroups["04"].Size1 + (Rad1Max - Rad1Min) / 4;
-                    curGroup01.Size1Min = dItemsGroups["04"].Size1 - (Rad1Max - Rad1Min) / 4;
+                    curGroup01.Size1Max = dItemsGroups["04"].Size1 + Rad1Mid / 2 + (Rad1Max - Rad1Min) / 4;
+                    curGroup01.Size1Min = dItemsGroups["04"].Size1 + Rad1Mid / 2 - (Rad1Max - Rad1Min) / 4;
                     if (curGroup01.DoValid())
                     {
                         result.Add(curGroup01);
@@ -74,8 +77,8 @@ namespace BearingsArrangementAndOrders
 
                     var curGroup02 = new BearingItemsGroup();
                     curGroup02.ItemType = ValidBearingItemTypes["02"];
-                    curGroup02.Size1Max = -dItemsGroups["04"].Size1 + (Rad1Max - Rad1Min) / 4;
-                    curGroup02.Size1Min = -dItemsGroups["04"].Size1 - (Rad1Max - Rad1Min) / 4;
+                    curGroup02.Size1Max = -dItemsGroups["04"].Size1 - Rad1Mid / 2 + (Rad1Max - Rad1Min) / 4;
+                    curGroup02.Size1Min = -dItemsGroups["04"].Size1 - Rad1Mid / 2 - (Rad1Max - Rad1Min) / 4;
                     if (curGroup02.DoValid())
                     {
                         result.Add(curGroup02);
