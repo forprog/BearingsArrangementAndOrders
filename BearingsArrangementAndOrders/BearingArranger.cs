@@ -21,8 +21,10 @@ namespace BearingsArrangementAndOrders
             {
                 foreach (BearingItemsGroup curItemGroupList in paramItemsGroupsList[paramLevel])
                 {
-                    List<BearingItemsGroup> curItemsGroups = new List<BearingItemsGroup>(paramPreviousItemGroups);
-                    curItemsGroups.Add(curItemGroupList);
+                    List<BearingItemsGroup> curItemsGroups = new List<BearingItemsGroup>(paramPreviousItemGroups)
+                    {
+                        curItemGroupList
+                    };
                     CheckArrangement(curItemsGroups, paramLevel + 1, paramMaxLevel, paramBearingType, paramItemsGroupsList, paramPossibleBearingGroups);
                 }
             }
@@ -102,7 +104,6 @@ namespace BearingsArrangementAndOrders
                         {
                             BearingGroup curSolutionGroup = new BearingGroup(curPossibleBearingGroup);
                             curSolutionGroup.SetCount(Math.Min(curSolutionGroup.GetCount(), ArrOrderCount));
-                            //todo добавить проверку минимального комплектуемого количества
                             if (curSolutionGroup.Count > paramArrOrder.BearingType.MinArrangeCount)
                             {
                                 ArrOrderCount -= curSolutionGroup.Count;
@@ -299,7 +300,8 @@ namespace BearingsArrangementAndOrders
                 foreach (var curItemType in curArrOrder.BearingType.ValidBearingItemTypes)
                 {
                     IEnumerable<BearingItemsGroup> curItemGroups = from qGroups in ItemsGroups
-                                                                   where (qGroups.ItemType.Description == curItemType.Value.Description) && (qGroups.ItemCount > 0)
+                                                                   where (qGroups.ItemType.Description == curItemType.Value.Description) && (qGroups.ItemCount > 0) 
+                                                                   &&((curArrOrder.BearingType.ValidBearingItemsSize1Max[curItemType.Key]  >=qGroups.Size1)&& (curArrOrder.BearingType.ValidBearingItemsSize1Min[curItemType.Key] <= qGroups.Size1))
                                                                    select qGroups;
                     curItemsGroupsLists.Add(curItemGroups.ToList());
                     curItemsGroups.AddRange(curItemGroups.ToList());
@@ -321,6 +323,7 @@ namespace BearingsArrangementAndOrders
                 {
                     IEnumerable<BearingItemsGroup> curItemGroups = from qGroups in ItemsGroups
                                                                    where (qGroups.ItemType.Description == curItemType.Value.Description) && (qGroups.ItemCount > 0)
+                                                                   && ((curArrOrder.BearingType.ValidBearingItemsSize1Max[curItemType.Key] >= qGroups.Size1) && (curArrOrder.BearingType.ValidBearingItemsSize1Min[curItemType.Key] <= qGroups.Size1))
                                                                    select qGroups;
                     curItemsGroups.AddRange(curItemGroups.ToList());
                 }

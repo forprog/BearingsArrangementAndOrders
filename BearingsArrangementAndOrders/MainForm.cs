@@ -39,13 +39,15 @@ namespace BearingsArrangementAndOrders
 
         private void btFileNameSelect_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            OpenFileDialog openFileDialog1 = new OpenFileDialog()
+            {
 
-            // Set filter options and filter index.
-            openFileDialog1.Filter = "Excel Files|*.xls;*.xlsm;*.xlsx";
-            openFileDialog1.FilterIndex = 1;
+                // Set filter options and filter index.
+                Filter = "Excel Files|*.xls;*.xlsm;*.xlsx",
+                FilterIndex = 1,
 
-            openFileDialog1.Multiselect = false;
+                Multiselect = false
+            };
 
             // Call the ShowDialog method to show the dialog box.
             var userClickedOK = openFileDialog1.ShowDialog();

@@ -82,15 +82,17 @@ namespace BearingsArrangementAndOrders
             }
         }
 
-        public bool DoValid()
+        public bool DoValid(BearingType paramBearingType)
         {
             bool bReturn = false;
             if ((Size1Max.HasValue) && (Size1Min.HasValue))
             {
                 double iSize1Max = Size1Max ?? 0;
                 double iSize1Min = Size1Min ?? 0;
-                double iTypeSize1Max = ItemType.Size1Max ?? 0;
-                double iTypeSize1Min = ItemType.Size1Min ?? 0;
+                //double iTypeSize1Max = ItemType.Size1Max ?? 0;
+                //double iTypeSize1Min = ItemType.Size1Min ?? 0;
+                double iTypeSize1Max = paramBearingType.ValidBearingItemsSize1Max[ItemType.Type];
+                double iTypeSize1Min = paramBearingType.ValidBearingItemsSize1Min[ItemType.Type];
                 if ((iSize1Max > iTypeSize1Min) && (iSize1Min < iTypeSize1Max))
                 {
                     Size1Max = Math.Min(iSize1Max, iTypeSize1Max);
