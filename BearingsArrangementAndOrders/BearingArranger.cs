@@ -300,8 +300,8 @@ namespace BearingsArrangementAndOrders
                 foreach (var curItemType in curArrOrder.BearingType.ValidBearingItemTypes)
                 {
                     IEnumerable<BearingItemsGroup> curItemGroups = from qGroups in ItemsGroups
-                                                                   where (qGroups.ItemType.Description == curItemType.Value.Description) && (qGroups.ItemCount > 0) 
-                                                                   &&((curArrOrder.BearingType.ValidBearingItemsSize1Max[curItemType.Key]  >=qGroups.Size1)&& (curArrOrder.BearingType.ValidBearingItemsSize1Min[curItemType.Key] <= qGroups.Size1))
+                                                                   where (qGroups.ItemType.Description == curItemType.Value.Description) && (qGroups.ItemCount > 0)
+                                                                   && ((curArrOrder.BearingType.ValidBearingItemsSize1Max[curItemType.Key] >= qGroups.Size1) && (curArrOrder.BearingType.ValidBearingItemsSize1Min[curItemType.Key] <= qGroups.Size1))
                                                                    select qGroups;
                     curItemsGroupsLists.Add(curItemGroups.ToList());
                     curItemsGroups.AddRange(curItemGroups.ToList());
