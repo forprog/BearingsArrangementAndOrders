@@ -63,5 +63,26 @@ namespace BearingsArrangementAndOrders
         {
 
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            BearingArranger curArranger = new BearingArranger();
+
+            ExcelInterface curExcel = new ExcelInterface(tbFileName.Text);
+            curExcel.LoadItemTypesFromExcel(curArranger.ItemTypes);
+            curExcel.LoadBearingTypesFromExcel(curArranger.BearingTypes, curArranger.ItemTypes);
+            curExcel.LoadBearingArrangementOrderFromExcel(curArranger.BearingArrOrders, curArranger.BearingTypes);
+            curExcel.LoadBearingItemsGroupsFromExcel(curArranger.ItemsGroups, curArranger.ItemTypes);
+            curExcel.Dispose();
+
+            curArranger.DoArrangement();
+
+            XMLInterface curXML = new XMLInterface();
+            curXML.ArrOrdersResultOutput(curArranger.BearingArrOrders, curArranger.ItemsGroups, curArranger.GrindingOrders);
+
+            //сообщение о завершении комплектовки
+            MessageBox.Show("Комплектовка завершена");
+
+        }
     }
 }

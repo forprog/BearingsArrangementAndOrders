@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace BearingsArrangementAndOrders
 {
-    class NotCompleteBearingGroup
+    public class NotCompleteBearingGroup
     {
         public BearingType Type;
-        public Dictionary<string, BearingItemsGroup> UsedBearingItemsGroups = new Dictionary<string, BearingItemsGroup>();
-        public Dictionary<string, BearingItemsGroup> NeededBearingItemsGroups = new Dictionary<string, BearingItemsGroup>();
+        public SerializableDictionary<string, BearingItemsGroup> UsedBearingItemsGroups = new SerializableDictionary<string, BearingItemsGroup>();
+        public SerializableDictionary<string, BearingItemsGroup> NeededBearingItemsGroups = new SerializableDictionary<string, BearingItemsGroup>();
 
         private int pCount;
         public int Count

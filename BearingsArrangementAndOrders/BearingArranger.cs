@@ -30,8 +30,10 @@ namespace BearingsArrangementAndOrders
             }
             else
             {
-                BearingGroup curBearingGroup = new BearingGroup();
-                curBearingGroup.Type = paramBearingType;
+                BearingGroup curBearingGroup = new BearingGroup()
+                {
+                    Type = paramBearingType
+                };
                 int iArrangementCountIncrease = 1;
                 foreach (BearingItemsGroup curItemGroup in paramPreviousItemGroups)
                 {
@@ -148,8 +150,10 @@ namespace BearingsArrangementAndOrders
             var curNeededItems = paramArrOrder.BearingType.CreateItemGroupsToCompleteOrder(paramUsedItems);
             if (curNeededItems.Count > 0)
             {
-                var curNotCompletedGroup = new NotCompleteBearingGroup();
-                curNotCompletedGroup.Type = paramArrOrder.BearingType;
+                var curNotCompletedGroup = new NotCompleteBearingGroup()
+                {
+                    Type = paramArrOrder.BearingType
+                };
                 foreach (var curItemGroup in paramUsedItems)
                 {
                     curNotCompletedGroup.UsedBearingItemsGroups.Add(curItemGroup.ItemType.Type, curItemGroup);
@@ -347,10 +351,12 @@ namespace BearingsArrangementAndOrders
                             }
                             else
                             {
-                                var curGroup = new BearingItemsGroup();
-                                curGroup.ItemType = NeededGroup.Value.ItemType;
-                                curGroup.Size1 = NeededGroup.Value.Size1;
-                                curGroup.ItemCount = curNotCompletedBearing.Type.BearingItemsCount[NeededGroup.Value.ItemType.Type] * curNotCompletedBearing.Count;
+                                var curGroup = new BearingItemsGroup()
+                                {
+                                    ItemType = NeededGroup.Value.ItemType,
+                                    Size1 = NeededGroup.Value.Size1,
+                                    ItemCount = curNotCompletedBearing.Type.BearingItemsCount[NeededGroup.Value.ItemType.Type] * curNotCompletedBearing.Count
+                                };
                                 curGrindingOrders.Add(curGroup);
                             }
                         }

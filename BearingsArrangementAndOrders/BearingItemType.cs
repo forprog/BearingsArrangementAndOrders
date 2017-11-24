@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BearingsArrangementAndOrders
 {
-    class BearingItemType
+    public class BearingItemType
     {
         public string Description; //уникальное наименование из 1С
         public string Type;//вид детали

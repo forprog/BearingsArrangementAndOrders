@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace BearingsArrangementAndOrders
 {
-    class BearingType
+    public class BearingType
     {
         public string Description;
-        public Dictionary<string, BearingItemType> ValidBearingItemTypes = new Dictionary<string, BearingItemType> { };
-        public Dictionary<string, int> BearingItemsCount = new Dictionary<string, int> { };
-        public Dictionary<string, int> ValidBearingItemsSize1Max = new Dictionary<string, int> { };
-        public Dictionary<string, int> ValidBearingItemsSize1Min = new Dictionary<string, int> { };
+        public SerializableDictionary<string, BearingItemType> ValidBearingItemTypes = new SerializableDictionary<string, BearingItemType> { };
+        public SerializableDictionary<string, int> BearingItemsCount = new SerializableDictionary<string, int> { };
+        public SerializableDictionary<string, int> ValidBearingItemsSize1Max = new SerializableDictionary<string, int> { };
+        public SerializableDictionary<string, int> ValidBearingItemsSize1Min = new SerializableDictionary<string, int> { };
         public double? Rad1Nominal;
         public double? Rad1Min;
         public double? Rad1Max;
@@ -32,7 +32,7 @@ namespace BearingsArrangementAndOrders
 
         public List<BearingItemsGroup> CreateItemGroupsToCompleteOrder(List<BearingItemsGroup> paramItemsGroups)
         {
-            Dictionary<string, BearingItemsGroup> dItemsGroups = new Dictionary<string, BearingItemsGroup> { { "01", new BearingItemsGroup() }, { "02", new BearingItemsGroup() }, { "52", new BearingItemsGroup() }, { "92", new BearingItemsGroup() }, { "04", new BearingItemsGroup() } };
+            SerializableDictionary<string, BearingItemsGroup> dItemsGroups = new SerializableDictionary<string, BearingItemsGroup> { { "01", new BearingItemsGroup() }, { "02", new BearingItemsGroup() }, { "52", new BearingItemsGroup() }, { "92", new BearingItemsGroup() }, { "04", new BearingItemsGroup() } };
             List<BearingItemsGroup> result = new List<BearingItemsGroup>();
 
             foreach (var curItemsGroup in paramItemsGroups)

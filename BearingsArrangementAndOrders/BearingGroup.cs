@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace BearingsArrangementAndOrders
 {
-    class BearingGroup
+    public class BearingGroup : IXmlSerializable
     {
         public BearingType Type;
-        public Dictionary<string, BearingItemsGroup> BearingItemsGroups = new Dictionary<string, BearingItemsGroup>();
+        public SerializableDictionary<string, BearingItemsGroup> BearingItemsGroups = new SerializableDictionary<string, BearingItemsGroup>();
         public double Rad1()
         {
             return Type.Rad1Nominal.GetValueOrDefault() + BearingItemsGroups["01"].Size1 - BearingItemsGroups["02"].Size1 - 2 * BearingItemsGroups["04"].Size1;
@@ -66,6 +67,62 @@ namespace BearingsArrangementAndOrders
         public BearingGroup()
         {
         }
-    }
+
+        #region IXmlSerializable Members
+        public System.Xml.Schema.XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void WriteXml(System.Xml.XmlWriter writer)
+        {
+            XmlSerializer StringSerializer = new XmlSerializer(typeof(String));
+            XmlSerializer DoubleSerializer = new XmlSerializer(typeof(Double));
+            XmlSerializer IntSerializer = new XmlSerializer(typeof(int));
+
+            writer.WriteStartElement("Rad1");
+            DoubleSerializer.Serialize(writer, this.Rad1());
+            writer.WriteEndElement();
+            writer.WriteStartElement("Count");
+            IntSerializer.Serialize(writer, this.Count);
+            writer.WriteEndElement();
+
+            foreach (var curItemGroup in this.BearingItemsGroups)
+            {
+                writer.WriteStartElement("BearingItem");
+                writer.WriteStartElement("Item");
+                StringSerializer.Serialize(writer, curItemGroup.Value.ItemType.Description);
+                writer.WriteEndElement();
+                //TODO поставить выгрузку характеристики
+                writer.WriteStartElement("Characteristic");
+
+                if (curItemGroup.Value.ItemType.Type=="04")
+                {
+                    StringSerializer.Serialize(writer, "ТУ");
+                }
+                else
+                {
+                    StringSerializer.Serialize(writer, "");
+                }
+                
+                writer.WriteEndElement();
+                writer.WriteStartElement("Count");
+                IntSerializer.Serialize(writer, this.Count*this.Type.BearingItemsCount[curItemGroup.Value.ItemType.Type]);
+                writer.WriteEndElement();
+                writer.WriteStartElement("Size1");
+                DoubleSerializer.Serialize(writer, curItemGroup.Value.Size1);
+                writer.WriteEndElement();
+                writer.WriteEndElement();
+            }
+        }
+
+        public void ReadXml(System.Xml.XmlReader reader)
+        {
+        }
+
+        #endregion
+
+
+        }
 }
 
