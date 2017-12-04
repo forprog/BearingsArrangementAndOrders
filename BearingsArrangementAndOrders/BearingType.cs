@@ -9,6 +9,7 @@ namespace BearingsArrangementAndOrders
     public class BearingType
     {
         public string Description;
+        public string ID; //уникальный идентификатор из 1С
         public SerializableDictionary<string, BearingItemType> ValidBearingItemTypes = new SerializableDictionary<string, BearingItemType> { };
         public SerializableDictionary<string, int> BearingItemsCount = new SerializableDictionary<string, int> { };
         public SerializableDictionary<string, int> ValidBearingItemsSize1Max = new SerializableDictionary<string, int> { };

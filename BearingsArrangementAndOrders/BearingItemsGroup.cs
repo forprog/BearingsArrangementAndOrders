@@ -128,17 +128,17 @@ namespace BearingsArrangementAndOrders
             writer.WriteStartElement("Item");
             StringSerializer.Serialize(writer, this.ItemType.Description);
             writer.WriteEndElement();
-            //TODO поставить выгрузку характеристики
-            writer.WriteStartElement("Characteristic");
 
-            if (this.ItemType.Type == "04")
-            {
-                StringSerializer.Serialize(writer, "ТУ");
-            }
-            else
-            {
-                StringSerializer.Serialize(writer, "");
-            }
+            writer.WriteStartElement("ItemID");
+            StringSerializer.Serialize(writer, this.ItemType.ID);
+            writer.WriteEndElement();
+            
+            writer.WriteStartElement("Characteristic");
+            StringSerializer.Serialize(writer, this.ItemType.CharachteristicDescription);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("CharacteristicGUID");
+            StringSerializer.Serialize(writer, this.ItemType.CharachteristicID);
             writer.WriteEndElement();
 
             writer.WriteStartElement("Size1");

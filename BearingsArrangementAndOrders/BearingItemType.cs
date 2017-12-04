@@ -9,6 +9,11 @@ namespace BearingsArrangementAndOrders
     public class BearingItemType
     {
         public string Description; //уникальное наименование из 1С
+        public string ID; //уникальный идентификатор из 1С
+
+        public string CharachteristicDescription; //наименование характеристики из 1С
+        public string CharachteristicID; //уникальный идентификатор характеристики из 1С
+
         public string Type;//вид детали
         //public double? Size1Max;
         //public double? Size1Min;

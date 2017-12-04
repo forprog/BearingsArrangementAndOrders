@@ -90,22 +90,23 @@ namespace BearingsArrangementAndOrders
             foreach (var curItemGroup in this.BearingItemsGroups)
             {
                 writer.WriteStartElement("BearingItem");
+
                 writer.WriteStartElement("Item");
                 StringSerializer.Serialize(writer, curItemGroup.Value.ItemType.Description);
                 writer.WriteEndElement();
-                //TODO поставить выгрузку характеристики
-                writer.WriteStartElement("Characteristic");
 
-                if (curItemGroup.Value.ItemType.Type=="04")
-                {
-                    StringSerializer.Serialize(writer, "ТУ");
-                }
-                else
-                {
-                    StringSerializer.Serialize(writer, "");
-                }
-                
+                writer.WriteStartElement("ItemID");
+                StringSerializer.Serialize(writer, curItemGroup.Value.ItemType.ID);
                 writer.WriteEndElement();
+
+                writer.WriteStartElement("Characteristic");
+                StringSerializer.Serialize(writer, curItemGroup.Value.ItemType.CharachteristicDescription);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("CharacteristicGUID");
+                StringSerializer.Serialize(writer, curItemGroup.Value.ItemType.CharachteristicID);
+                writer.WriteEndElement();
+
                 writer.WriteStartElement("Count");
                 IntSerializer.Serialize(writer, this.Count*this.Type.BearingItemsCount[curItemGroup.Value.ItemType.Type]);
                 writer.WriteEndElement();
