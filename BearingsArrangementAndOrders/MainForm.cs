@@ -31,7 +31,7 @@ namespace BearingsArrangementAndOrders
 
             curExcel.ArrOrdersResultOutput(curArranger.BearingArrOrders, curArranger.ItemsGroups, curArranger.GrindingOrders);
             curExcel.Dispose();
-            
+
             //сообщение о завершении комплектовки
             MessageBox.Show("Комплектовка завершена");
 
@@ -61,7 +61,44 @@ namespace BearingsArrangementAndOrders
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Count() > 1)
+            {
+                LoadAndArrangeFromXML(args[1]);
+                this.Close();
+            }
+        }
 
+        private void LoadAndArrangeFromXML(string sParamDirectory)
+        {
+            BearingArranger curArranger = new BearingArranger();
+
+            string sTypesFileName = sParamDirectory + "\\Данные_ПШ_Деталей.xml";
+            string sOrdersFileName = sParamDirectory + "\\ЗаданиеНаКомплектовку.xml";
+            string sStocksFileName = sParamDirectory + "\\ОстаткиДеталей.xml";
+            XMLInterface curXML = new XMLInterface();
+            curXML.LoadTypes(curArranger.BearingTypes, curArranger.ItemTypes,sTypesFileName);
+            curXML.LoadBearingArrangementOrders(curArranger.BearingArrOrders, curArranger.BearingTypes,sOrdersFileName);
+            curXML.LoadItemStocks(curArranger.ItemsGroups, curArranger.ItemTypes, sStocksFileName);
+
+            curArranger.DoArrangement();
+
+            string sSolutionFileName = sParamDirectory + "\\Комплектовка.xml";
+            string sUsedItemsFileName = sParamDirectory + "\\Детали.xml";
+            string sGrindingOrdersFileName = sParamDirectory + "\\Заказы.xml"; 
+
+            curXML.SolutionOutput(curArranger.BearingArrOrders,sSolutionFileName);
+            curXML.UsedItemsOutput(curArranger.ItemsGroups,sUsedItemsFileName);
+            curXML.GrindingOrdersOutput(curArranger.GrindingOrders,sGrindingOrdersFileName);
+
+            //сообщение о завершении комплектовки
+            MessageBox.Show("Комплектовка завершена");
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            LoadAndArrangeFromXML("P:\\ПДО\\Замыцкий");
         }
     }
 }

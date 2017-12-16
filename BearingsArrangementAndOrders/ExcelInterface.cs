@@ -119,12 +119,12 @@ namespace BearingsArrangementAndOrders
             return Value == null ? 0 : Convert.ToDouble(NullToString(Value.ToString()));
 
         }
-        private void AddItemTypeToBearingType(BearingType paramBearingType, string sParamItemDescr, string sParamItemCount, string sParamSize1Min, string sParamSize1Max, List<BearingItemType> paramItemTypes)
+        private void AddItemTypeToBearingType(BearingType paramBearingType, string sParamItemDescr, string sParamCharID, string sParamItemCount, string sParamSize1Min, string sParamSize1Max, List<BearingItemType> paramItemTypes)
         {
             if ((sParamItemDescr != "") && (sParamItemCount != ""))
             {
                 var curFoundItemTypes = from qItemType in paramItemTypes
-                                        where qItemType.Description == sParamItemDescr
+                                        where (qItemType.Description == sParamItemDescr) && (qItemType.CharachteristicID == sParamCharID)
                                         select qItemType;
                 BearingItemType curItemType = curFoundItemTypes.First();
 
@@ -155,11 +155,14 @@ namespace BearingsArrangementAndOrders
                     BearingItemType CurItemType = new BearingItemType()
                     {
                         Description = sDescription,
-                        Type = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 1].Value),
+                        Type = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 2].Value),
+                        ID = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol].Value),
+                        CharachteristicDescription = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 1].Value),
+                        CharachteristicID = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 1].Value),
                         //CurItemType.Size1Min = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 2].Value);
                         //CurItemType.Size1Max = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 3].Value);
-                        MinOrderCount = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 4].Value),
-                        Size1MinDifference = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 5].Value)
+                        MinOrderCount = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 5].Value),
+                        Size1MinDifference = NullToDouble(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 6].Value)
                     };
                     paramItemTypes.Add(CurItemType);
                 }
@@ -184,11 +187,11 @@ namespace BearingsArrangementAndOrders
             Worksheet = Worksheets[sBearingTypesListName];
 
             int iExcelRowNumber = iBearingTypesFirstRow;
-            string sDescription, sItem01Descr, sItem01Count, sItem01Size1Max, sItem01Size1Min,
-                sItem02Descr, sItem02Count, sItem02Size1Max, sItem02Size1Min,
-                sItem92Descr, sItem92Count, sItem92Size1Max, sItem92Size1Min,
-                sItem52Descr, sItem52Count, sItem52Size1Max, sItem52Size1Min,
-                sItem04Descr, sItem04Count, sItem04Size1Max, sItem04Size1Min,
+            string sDescription, sItem01Descr, sItem01Count, sItem01Size1Max, sItem01Size1Min, sItem01Characht,
+                sItem02Descr, sItem02Count, sItem02Size1Max, sItem02Size1Min, sItem02Characht,
+                sItem92Descr, sItem92Count, sItem92Size1Max, sItem92Size1Min, sItem92Characht,
+                sItem52Descr, sItem52Count, sItem52Size1Max, sItem52Size1Min, sItem52Characht,
+                sItem04Descr, sItem04Count, sItem04Size1Max, sItem04Size1Min, sItem04Characht,
                 sR1Nom, sR1Min, sR1Max, sMinArrangeCount;
 
             do
@@ -198,54 +201,63 @@ namespace BearingsArrangementAndOrders
                 {
                     BearingType CurBearingType = new BearingType()
                     {
-                        Description = sDescription
+                        Description = sDescription,
+                        ID = sDescription
                     };
 
                     //01
-                    sItem01Descr = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 1].Value);
-                    sItem01Count = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 2].Value);
-                    sItem01Size1Min = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 3].Value);
-                    sItem01Size1Max = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 4].Value);
-                    AddItemTypeToBearingType(CurBearingType, sItem01Descr, sItem01Count, sItem01Size1Min, sItem01Size1Max, paramItemTypes);
+                    sItem01Descr =      NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 1].Value);
+                    sItem01Characht =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 2].Value);
+                    sItem01Count =      NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 3].Value);
+                    sItem01Size1Min =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 4].Value);
+                    sItem01Size1Max =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 5].Value);
+                    AddItemTypeToBearingType(CurBearingType, sItem01Descr, sItem01Characht, sItem01Count, sItem01Size1Min, sItem01Size1Max, paramItemTypes);
 
                     //02
-                    sItem02Descr = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 5].Value);
-                    sItem02Count = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 6].Value);
-                    sItem02Size1Min = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 7].Value);
-                    sItem02Size1Max = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 8].Value);
-                    AddItemTypeToBearingType(CurBearingType, sItem02Descr, sItem02Count, sItem02Size1Min, sItem02Size1Max, paramItemTypes);
+                    sItem02Descr =      NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 6].Value);
+                    sItem02Characht =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 7].Value);
+                    sItem02Count =      NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 8].Value);
+                    sItem02Size1Min =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 9].Value);
+                    sItem02Size1Max =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 10].Value);
+                    
+                    AddItemTypeToBearingType(CurBearingType, sItem02Descr, sItem02Characht, sItem02Count, sItem02Size1Min, sItem02Size1Max, paramItemTypes);
 
                     //92
-                    sItem92Descr = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 9].Value);
-                    sItem92Count = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 10].Value);
-                    sItem92Size1Min = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 11].Value);
-                    sItem92Size1Max = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 12].Value);
-                    AddItemTypeToBearingType(CurBearingType, sItem92Descr, sItem92Count, sItem92Size1Min, sItem92Size1Max, paramItemTypes);
+                    sItem92Descr =      NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 11].Value);
+                    sItem92Characht =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 12].Value);
+                    sItem92Count =      NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 13].Value);
+                    sItem92Size1Min =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 14].Value);
+                    sItem92Size1Max =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 15].Value);
+                    
+                    AddItemTypeToBearingType(CurBearingType, sItem92Descr, sItem92Characht, sItem92Count, sItem92Size1Min, sItem92Size1Max, paramItemTypes);
 
                     //52
-                    sItem52Descr = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 13].Value);
-                    sItem52Count = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 14].Value);
-                    sItem52Size1Min = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 15].Value);
-                    sItem52Size1Max = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 16].Value);
-                    AddItemTypeToBearingType(CurBearingType, sItem52Descr, sItem52Count, sItem52Size1Min, sItem52Size1Max, paramItemTypes);
+                    sItem52Descr =      NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 16].Value);
+                    sItem52Characht =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 17].Value);
+                    sItem52Count =      NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 18].Value);
+                    sItem52Size1Min =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 19].Value);
+                    sItem52Size1Max =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 20].Value);
+                    
+                    AddItemTypeToBearingType(CurBearingType, sItem52Descr, sItem52Characht, sItem52Count, sItem52Size1Min, sItem52Size1Max, paramItemTypes);
 
                     //04
-                    sItem04Descr = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 17].Value);
-                    sItem04Count = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 18].Value);
-                    sItem04Size1Min = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 19].Value);
-                    sItem04Size1Max = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 20].Value);
-                    AddItemTypeToBearingType(CurBearingType, sItem04Descr, sItem04Count, sItem04Size1Min, sItem04Size1Max, paramItemTypes);
+                    sItem04Descr =      NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 21].Value);
+                    sItem04Characht =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 22].Value);
+                    sItem04Count =      NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 23].Value);
+                    sItem04Size1Min =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 24].Value);
+                    sItem04Size1Max =   NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 25].Value);
+                    AddItemTypeToBearingType(CurBearingType, sItem04Descr, sItem04Characht, sItem04Count, sItem04Size1Min, sItem04Size1Max, paramItemTypes);
 
-                    sR1Nom = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 21].Value);
+                    sR1Nom = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 26].Value);
                     CurBearingType.Rad1Nominal = Convert.ToDouble(sR1Nom);
 
-                    sR1Min = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 22].Value);
+                    sR1Min = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 27].Value);
                     CurBearingType.Rad1Min = Convert.ToDouble(sR1Min);
 
-                    sR1Max = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 23].Value);
+                    sR1Max = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 28].Value);
                     CurBearingType.Rad1Max = Convert.ToDouble(sR1Max);
 
-                    sMinArrangeCount = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 24].Value);
+                    sMinArrangeCount = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 29].Value);
                     CurBearingType.MinArrangeCount = Convert.ToDouble(sMinArrangeCount);
 
                     paramBearingTypes.Add(CurBearingType);
@@ -318,7 +330,7 @@ namespace BearingsArrangementAndOrders
 
             int iExcelRowNumber = iItemsFirstRow;
             double dSize;
-            string sDescription, sCount, sSize, sType;
+            string sDescription, sCount, sSize, sType, sCharact;
             BearingItemType curType;
             BearingItemsGroup curGroup;
 
@@ -335,9 +347,9 @@ namespace BearingsArrangementAndOrders
                         if (sDescription != "")
                         {
                             sType = NullToString(Worksheet.Cells[1, 2].Value);
-
+                            sCharact = NullToString(Worksheet.Cells[1, 3].Value);
                             var ItemType = from CurItemType in paramBearingItemTypes
-                                           where CurItemType.Description == sDescription
+                                           where (CurItemType.Description == sDescription)&& (CurItemType.CharachteristicID == sCharact)
                                            select CurItemType;
 
                             if (ItemType.Count() > 0)
@@ -346,7 +358,7 @@ namespace BearingsArrangementAndOrders
                             }
                             else
                             {
-                                curType = new BearingItemType { Description = sDescription, Type = sType };
+                                curType = new BearingItemType { Description = sDescription, Type = sType, CharachteristicID = sCharact, CharachteristicDescription = sCharact, ID = sDescription };
                                 paramBearingItemTypes.Add(curType);
                             }
 

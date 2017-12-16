@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace BearingsArrangementAndOrders
 {
-    class BearingsArrangementOrder
+    [XmlRoot("BearingsArrangementOrder")]
+    public class BearingsArrangementOrder
     {
         public BearingType BearingType;
         public int OrderCount;
@@ -32,5 +34,6 @@ namespace BearingsArrangementAndOrders
             }
             return iReturn;
         }
-    }
+
+     }
 }

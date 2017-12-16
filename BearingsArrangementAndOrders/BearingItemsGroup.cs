@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace BearingsArrangementAndOrders
 {
-    class BearingItemsGroup
+    public class BearingItemsGroup : IXmlSerializable
     //класс содержит информацию о количестве деталей, одинаковых по всем размерам, обозначению и виду детали
     //count разведен на 3 части - остаток, выдать и зарезервированный. После поиска решений по каждой группе деталей сразу понятно, сколько осталось деталей, сколько выдать, с колько отложить на заказы колец
     {
@@ -111,6 +112,57 @@ namespace BearingsArrangementAndOrders
         {
             Size1 = Size1Min.GetValueOrDefault() + (Size1Max.GetValueOrDefault() - Size1Min.GetValueOrDefault()) / 2;
         }
+
+        #region IXmlSerializable Members
+        public System.Xml.Schema.XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void WriteXml(System.Xml.XmlWriter writer)
+        {
+            XmlSerializer StringSerializer = new XmlSerializer(typeof(String));
+            XmlSerializer DoubleSerializer = new XmlSerializer(typeof(Double));
+            XmlSerializer IntSerializer = new XmlSerializer(typeof(int));
+
+            writer.WriteStartElement("Item");
+            StringSerializer.Serialize(writer, this.ItemType.Description);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("ItemID");
+            StringSerializer.Serialize(writer, this.ItemType.ID);
+            writer.WriteEndElement();
+            
+            writer.WriteStartElement("Characteristic");
+            StringSerializer.Serialize(writer, this.ItemType.CharachteristicDescription);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("CharacteristicGUID");
+            StringSerializer.Serialize(writer, this.ItemType.CharachteristicID);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("Size1");
+            DoubleSerializer.Serialize(writer, this.Size1);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("GiveOutCount");
+            IntSerializer.Serialize(writer, this.GiveOutItemCount);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("ReservedCount");
+            IntSerializer.Serialize(writer, this.ReservedItemCount);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("ItemCount");
+            IntSerializer.Serialize(writer, this.ItemCount);
+            writer.WriteEndElement();
+        }
+
+        public void ReadXml(System.Xml.XmlReader reader)
+        {
+        }
+
+        #endregion
 
     }
 }
