@@ -64,12 +64,12 @@ namespace BearingsArrangementAndOrders
             string[] args = Environment.GetCommandLineArgs();
             if (args.Count() > 1)
             {
-                LoadAndArrangeFromXML(args[1]);
+                LoadAndArrangeFromXML(args[1],false);
                 this.Close();
             }
         }
 
-        private void LoadAndArrangeFromXML(string sParamDirectory)
+        private void LoadAndArrangeFromXML(string sParamDirectory, bool bShowMessage = true)
         {
             BearingArranger curArranger = new BearingArranger();
 
@@ -91,8 +91,11 @@ namespace BearingsArrangementAndOrders
             curXML.UsedItemsOutput(curArranger.ItemsGroups,sUsedItemsFileName);
             curXML.GrindingOrdersOutput(curArranger.GrindingOrders,sGrindingOrdersFileName);
 
-            //сообщение о завершении комплектовки
-            MessageBox.Show("Комплектовка завершена");
+            if (bShowMessage)
+            {
+                //сообщение о завершении комплектовки
+                MessageBox.Show("Комплектовка завершена");
+            }
 
         }
 
