@@ -138,19 +138,12 @@ namespace BearingsArrangementAndOrders
                                 }
                                 curPossibleBearingGroup.SetCount();
                                 paramSolution.Add(curSolutionGroup);
-                                if (ArrOrderCount == 0)
-                                {
-                                    break;
-                                }
+                                if (ArrOrderCount == 0) break;
                             }
                         }
                     }
                 }
-                if (ArrOrderCount == 0)
-                {
-                    break;
-                }
-
+                if (ArrOrderCount == 0) break;
             }
         }
 
