@@ -106,7 +106,8 @@ namespace BearingsArrangementAndOrders
                         {
                             BearingGroup curSolutionGroup = new BearingGroup(curPossibleBearingGroup);
                             curSolutionGroup.SetCount(Math.Min(curSolutionGroup.GetCount(), ArrOrderCount));
-                            if (curSolutionGroup.Count > paramArrOrder.BearingType.MinArrangeCount)
+                            int iMinArrangeCount = Math.Min(ArrOrderCount, paramArrOrder.BearingType.MinArrangeCount);
+                            if (curSolutionGroup.Count >= iMinArrangeCount)
                             {
                                 ArrOrderCount -= curSolutionGroup.Count;
                                 foreach (var item in curSolutionGroup.BearingItemsGroups)
@@ -137,11 +138,19 @@ namespace BearingsArrangementAndOrders
                                 }
                                 curPossibleBearingGroup.SetCount();
                                 paramSolution.Add(curSolutionGroup);
-
+                                if (ArrOrderCount == 0)
+                                {
+                                    break;
+                                }
                             }
                         }
                     }
                 }
+                if (ArrOrderCount == 0)
+                {
+                    break;
+                }
+
             }
         }
 

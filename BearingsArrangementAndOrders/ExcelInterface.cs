@@ -258,7 +258,7 @@ namespace BearingsArrangementAndOrders
                     CurBearingType.Rad1Max = Convert.ToDouble(sR1Max);
 
                     sMinArrangeCount = NullToString(Worksheet.Cells[iExcelRowNumber, iBearingTypesFirstCol + 29].Value);
-                    CurBearingType.MinArrangeCount = Convert.ToDouble(sMinArrangeCount);
+                    CurBearingType.MinArrangeCount = Convert.ToInt32(sMinArrangeCount);
 
                     paramBearingTypes.Add(CurBearingType);
                 }

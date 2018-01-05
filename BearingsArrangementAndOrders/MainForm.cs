@@ -64,7 +64,7 @@ namespace BearingsArrangementAndOrders
             string[] args = Environment.GetCommandLineArgs();
             if (args.Count() > 1)
             {
-                LoadAndArrangeFromXML(args[1],false);
+                LoadAndArrangeFromXML(args[1], false);
                 this.Close();
             }
         }
@@ -101,7 +101,7 @@ namespace BearingsArrangementAndOrders
 
         private void button2_Click(object sender, EventArgs e)
         {
-            LoadAndArrangeFromXML("P:\\ПДО\\Замыцкий");
+            LoadAndArrangeFromXML("P:\\ПДО\\Замыцкий\\Комплектовка ПШ\\Программа XML\\Новая папка");
         }
     }
 }

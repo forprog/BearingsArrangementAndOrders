@@ -254,13 +254,13 @@ namespace BearingsArrangementAndOrders
                 double dR1Nom = Convert.ToDouble(sParamR1Nom == "" ? "0" : sParamR1Nom);
                 double dR1Min = Convert.ToDouble(sParamR1Min == "" ? "0" : sParamR1Min);
                 double dR1Max = Convert.ToDouble(sParamR1Max == "" ? "0" : sParamR1Max);
-                double dMinArrangeCount = Convert.ToDouble(sParamMinArrangeCount == "" ? "0" : sParamMinArrangeCount);
+                int iMinArrangeCount = Convert.ToInt32(sParamMinArrangeCount == "" ? "0" : sParamMinArrangeCount);
 
                 resultBearingType = new BearingType()
                 {
                     Description = sParamDescription,
                     ID = sParamID,
-                    MinArrangeCount = dMinArrangeCount,
+                    MinArrangeCount = iMinArrangeCount,
                     Rad1Max = dR1Max,
                     Rad1Min = dR1Min,
                     Rad1Nominal = dR1Nom
