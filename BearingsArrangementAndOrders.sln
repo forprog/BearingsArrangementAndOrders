@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BearingsArrangementAndOrders", "BearingsArrangementAndOrders\BearingsArrangementAndOrders.csproj", "{8E5142D3-7565-41AB-8326-0C91D16850D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BearinsArrangementAndOrdersClassLibrary", "..\..\..\Documents\Visual Studio 2017\Projects\BearinsArrangementAndOrdersClassLibrary\BearinsArrangementAndOrdersClassLibrary\BearinsArrangementAndOrdersClassLibrary.csproj", "{8A43ADAD-E502-471A-8FB8-D963CE3465BA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{8E5142D3-7565-41AB-8326-0C91D16850D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E5142D3-7565-41AB-8326-0C91D16850D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E5142D3-7565-41AB-8326-0C91D16850D6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8A43ADAD-E502-471A-8FB8-D963CE3465BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8A43ADAD-E502-471A-8FB8-D963CE3465BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8A43ADAD-E502-471A-8FB8-D963CE3465BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8A43ADAD-E502-471A-8FB8-D963CE3465BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
